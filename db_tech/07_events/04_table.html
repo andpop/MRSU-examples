@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        td {
+            border: 1px solid black;
+            width: 100px;
+            height: 100px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <table>
+        <tr>
+            <td>1</td> <td>2</td> <td>3</td> <td>4</td>
+        </tr>
+        <tr>
+            <td>5</td> <td>6</td> <td>7</td> <td>8</td>
+        </tr>
+    </table>
+
+<script>
+
+let table = document.querySelector('table');
+let tds = document.querySelectorAll('td');
+console.dir(tds);
+
+table.onclick = (event) => {
+    let td = event.target;
+
+    if (td.tagName != 'TD') return;
+
+    td.style.backgroundColor = 'yellow';
+    console.log('cellIndex = ', td.cellIndex, 'rowIndex', td.parentNode.rowIndex);
+};
+
+
+</script>
+</body>
+</html>

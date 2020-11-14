@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        body * {
+            margin: 10px;
+            border: 1px solid black;
+        }
+</style>
+</head>
+<body>
+    <form onclick="handleForm(event)">
+        Text inside form
+        <div onclick="handleDiv(event)">
+            Text inside div
+            <p onclick="handleP(event)">
+                Text inside p
+            </p>
+        </div>
+    </form>    
+
+<script>
+    handleForm = (e) => {
+        console.log('Click on form');
+        console.log('Target = ', e.target);
+        console.log('currentTarget = ', e.currentTarget);
+        console.log('====================================');
+    };
+
+    handleDiv = (e) => {
+        console.log('Click on div');
+        console.log('Target =', e.target);
+        console.log('currentTarget = ', e.currentTarget);
+        console.log('====================================');
+    };
+
+    handleP = (e) => {
+        console.log('Click on p');
+        console.log('Target = ', e.target);
+        console.log('currentTarget =', e.currentTarget);
+        console.log('====================================');
+    };
+</script>
+</body>
+</html>

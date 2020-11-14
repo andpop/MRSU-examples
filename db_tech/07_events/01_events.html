@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+    <h1 onclick="hello()">Hello</h1>
+    <h2 id="bye">Good bye</h2>
+    <h3 id="note">Note</h3>
+    <a href="https://google.com" id="link">Google</a>
+
+<script type="text/javascript">
+    function hello() {
+        console.log('Hello!!!!');
+    };
+
+    // ============================================
+    const byeHandler = () => {
+        console.log('Good Bye');
+    };
+
+    // bye.onclick = byeHandler; // window.bye
+
+    let elem = document.getElementById('bye');
+    elem.onclick = function () {
+        console.log('Good bye again');
+    };
+
+    // ==============================================
+    let noteElem = document.querySelector('#note');
+
+    noteElem.addEventListener('click', function () {
+        console.log('First handler');
+        console.log(this.innerHTML);
+    });
+    
+    noteElem.addEventListener('click', (event) => {
+        console.log('Second handler');
+        console.log(event);
+        console.log(event.target);
+    });
+
+    // ===============================================
+    const link = document.querySelector('#link');
+    link.addEventListener('click', (e) => {
+        console.log('No Google!!');
+        e.target.style.color = 'red';
+        e.preventDefault();
+    });
+    
+
+</script>
+</body>
+</html>

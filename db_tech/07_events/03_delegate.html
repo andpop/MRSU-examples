@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        body * {
+            margin: 10px;
+            border: 1px solid black;
+        }
+</style>
+</head>
+<body>
+    <form onclick="handleForm(event)">
+        Text inside form
+        <div>
+            Text inside div
+            <p> Texi inside p </p>
+            <p> Texi inside p </p>
+            <p> Texi inside p </p>
+            <p> Texi inside p </p>
+        </div>
+    </form>    
+
+<script>
+    const getNodeIndex = element => [...element.parentNode.children].indexOf(element);
+
+    handleForm = (e) => {
+        if (e.target.tagName !== 'P') return;
+
+        e.target.style.color = 'red';
+        console.log('Click on <p> with index ', getNodeIndex(e.target));
+    };
+
+</script>
+</body>
+</html>
