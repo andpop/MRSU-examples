@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<script>
+'use strict';
+
+(async () => {
+let url = 'https://api.github.com/repos/andpop-mrsu/402_Makshev_NI/pulls';
+let response = await fetch(url);
+
+let pulls = await response.json(); // читаем ответ в формате JSON
+console.dir(pulls);
+
+})()
+</script>
