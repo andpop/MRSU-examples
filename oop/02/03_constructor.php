@@ -6,6 +6,7 @@ class Student
     var $name;
     var $lastName;
 
+    // signatura: __construct($this, $name, $lastName)
     public function __construct($name, $lastName)
     {
         $this->name = $name;
