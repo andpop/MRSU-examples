@@ -19,7 +19,7 @@ class Car
     public function displayColor()
     {
         echo "Цвет: $this->color".PHP_EOL;
-        /* echo '$this in displayColor: ' . get_class($this) . PHP_EOL; */
+        echo '$this in displayColor: ' . get_class($this) . PHP_EOL;
     }
 }
 
@@ -35,7 +35,7 @@ class PassengerCar extends Car
     public function displayNumberPassenger()
     {
         echo "Количество мест: $this->numberPassenger".PHP_EOL;
-        /* echo '$this in displayNumberPassenger: ' . get_class($this) . PHP_EOL; */
+        echo '$this in displayNumberPassenger: ' . get_class($this) . PHP_EOL;
     }
 }
 

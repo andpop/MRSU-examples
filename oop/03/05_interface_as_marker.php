@@ -46,12 +46,12 @@ abstract class Eater
     public $name;
     protected $type;
 
-    protected function canEat($food)
+    protected function canEat(Food $food)
     {
         return true;
     }
 
-    public function eat($food)
+    public function eat(Food $food)
     {
         echo "Меня зовут " . $this->name . ". Я " . $this->type . "." . PHP_EOL;
         if ($this->canEat($food)) {
@@ -80,7 +80,7 @@ class Vegan extends Eater
         $this->name = $name;
     }
 
-    protected function canEat($food)
+    protected function canEat(Food $food)
     {
         return false;
     }
