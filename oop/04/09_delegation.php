@@ -1,7 +1,5 @@
 <?php
 
-namespace Popov\Lection4\Ex3;
-
 class Engine
 {
     private $power;
@@ -14,32 +12,13 @@ class Engine
     public function on()
     {
         // Реализация функционала
+        // Много кода
         echo "Двигатель заведен".PHP_EOL;
     }
     public function off()
     {
         // Реализация функционала
-        echo "Двигатель выключен".PHP_EOL;
-    }
-}
-
-class Engine2
-{
-    private $power;
-
-    public function __construct(int $power)
-    {
-        $this->power = $power;
-    }
-
-    public function on()
-    {
-        // Реализация функционала
-        echo "Двигатель заведен".PHP_EOL;
-    }
-    public function off()
-    {
-        // Реализация функционала
+        // Много кода
         echo "Двигатель выключен".PHP_EOL;
     }
 }
@@ -68,8 +47,7 @@ class Car
 }
 
 $engine = new Engine(160);
-$engine2 = new Engine2(160);
-$myCar = new Car("Saturn VUE", $engine2);
+$myCar = new Car("Saturn VUE", $engine);
 
 $myCar->startEngine();
 $myCar->stopEngine();

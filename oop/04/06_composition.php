@@ -1,7 +1,5 @@
 <?php
 
-namespace Popov\Lection4\Ex1;
-
 class Engine
 {
     private $power;

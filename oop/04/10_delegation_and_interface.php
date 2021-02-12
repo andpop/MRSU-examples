@@ -1,7 +1,5 @@
 <?php
 
-namespace Popov\Lection4\Ex4;
-
 interface EngineInterface
 {
     public function on();
@@ -20,11 +18,13 @@ class Engine implements EngineInterface
     public function on()
     {
         // Реализация функционала
+        // Много кода
         echo "Двигатель заведен".PHP_EOL;
     }
     public function off()
     {
         // Реализация функционала
+        // Много кода
         echo "Двигатель выключен".PHP_EOL;
     }
 }
@@ -41,11 +41,13 @@ class AnotherEngine implements EngineInterface
     public function on()
     {
         // Реализация функционала
+        // Много кода
         echo "Другой двигатель заведен".PHP_EOL;
     }
     public function off()
     {
         // Реализация функционала
+        // Много кода
         echo "Другой двигатель выключен".PHP_EOL;
     }
 }
