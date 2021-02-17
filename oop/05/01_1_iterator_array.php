@@ -3,14 +3,10 @@
 class MyIterator implements Iterator
 {
     private $innerArray = [];
-    private $position = 0;
 
     public function __construct(array $array)
     {
-        if (is_array($array)) {
-            $this->innerArray = $array;
-        }
-        $this->position = 0;
+        $this->innerArray = $array;
     }
 
     public function rewind()
@@ -21,30 +17,29 @@ class MyIterator implements Iterator
 
     public function key()
     {
-        $var = key($this->innerArray);
-        echo "key: $var" . PHP_EOL;
-        return $var;
+        $result = key($this->innerArray);
+        echo "key: $result" . PHP_EOL;
+        return $result;
     }
 
     public function current()
     {
-        $var = current($this->innerArray);
-        echo "current: $var" . PHP_EOL;
-        return $var;
+        $result = current($this->innerArray);
+        echo "current: $result" . PHP_EOL;
+        return $result;
     }
 
     public function next()
     {
-        $var = next($this->innerArray);
-        echo "next: $var" . PHP_EOL;
-        return $var;
+        $result = next($this->innerArray);
+        echo "next: $result" . PHP_EOL;
     }
 
     public function valid()
     {
-        $var = $this->current() !== false;
-        echo "valid: {$var}" . PHP_EOL;
-        return $var;
+        $result = $this->current() !== false;
+        echo "valid: {$result}" . PHP_EOL;
+        return $result;
     }
 }
 

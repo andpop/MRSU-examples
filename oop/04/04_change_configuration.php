@@ -18,7 +18,7 @@ $document->print($pageLayout1);
 // Setters (state is changed - bad!)
 
 $pageLayout->setLeftMargin(10);
-$pageLayout->setRange('selectied');
+$pageLayout->setRange('selected');
 
 $document->print($pageLayout);
 

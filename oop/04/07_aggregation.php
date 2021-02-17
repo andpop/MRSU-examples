@@ -22,6 +22,7 @@ class Car
     }
 }
 
-$myCar = new Car("Saturn VUE", new Engine(160));
+$engine = new Engine(100);
+$myCar = new Car("Saturn VUE", $engine);
 
 var_dump($myCar);
