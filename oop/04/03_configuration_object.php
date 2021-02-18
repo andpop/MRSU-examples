@@ -3,9 +3,9 @@
 $document = new Document();
 
 // ==================================================
-$document.leftMargin = 20;
-$document.rightMargin = 10;
-$document.range = 'all';
+$document->leftMargin = 20;
+$document->rightMargin = 10;
+$document->range = 'all';
 
 $document->print();
 // ==================================================
