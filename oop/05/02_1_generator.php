@@ -9,9 +9,16 @@ function numbers()
     echo "FINISH" . PHP_EOL;
 }
 
-$x = numbers();
-var_dump($x);
+$ranges = numbers();
+var_dump($ranges);
 
-/* foreach ($x as $value) { */
+$n = $ranges->current();
+echo "$n\n";
+
+$ranges->next();
+$n = $ranges->current();
+echo "$n\n";
+
+/* foreach ($ranges as $value) { */
 /*     echo "VALUE: $value" . PHP_EOL; */
 /* } */
