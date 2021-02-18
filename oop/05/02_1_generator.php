@@ -12,6 +12,6 @@ function numbers()
 $x = numbers();
 var_dump($x);
 
-foreach ($x as $value) {
-    echo "VALUE: $value" . PHP_EOL;
-}
+/* foreach ($x as $value) { */
+/*     echo "VALUE: $value" . PHP_EOL; */
+/* } */
