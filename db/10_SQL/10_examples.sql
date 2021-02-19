@@ -3,6 +3,33 @@ CREATE DATABASE test_db CHARACTER SET = 'utf8';
 USE test_db;
 
 -- 2. Create tables
+----- SQLite ---------------------
+CREATE TABLE `vendor` (
+  `id` INTEGER PRIMARY KEY,
+  `name` VARCHAR(30) NOT NULL,
+  `city` VARCHAR(30) NOT NULL,
+  `percent` INTEGER NOT NULL CHECK (`percent`>0)
+);
+
+CREATE TABLE `customer` (
+  `id` INTEGER PRIMARY KEY,
+  `name` VARCHAR(30) NOT NULL,
+  `city` VARCHAR(30) NOT NULL,
+  `rating` INT(6) NOT NULL CHECK (`rating`>0),
+  `vendor_id` INT(6) NULL
+);
+
+CREATE TABLE `order` (
+  `id` INTEGER PRIMARY KEY,
+  `summa` NUMERIC NOT NULL,
+  `order_date` DATE NOT NULL,
+  `customer_id` INTEGER NOT NULL,
+  `vendor_id` INTEGER NOT NULL
+);
+
+
+----- MySQL  ---------------------
+
 CREATE TABLE `vendor` (
   `id` int(6) NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `name` varchar(30) NOT NULL,
@@ -52,6 +79,56 @@ INSERT INTO `order` (`id`, `summa`, `order_date`, `customer_id`, `vendor_id`) VA
 
 -- 4. Relations and restrictions
 
+----- SQLite  ---------------------
+PRAGMA foreign_keys = ON;
+
+DROP TABLE `order`;
+DROP TABLE `customer`;
+
+
+CREATE TABLE `order` (
+  `id` INTEGER PRIMARY KEY,
+  `summa` NUMERIC NOT NULL,
+  `order_date` DATE NOT NULL,
+  `customer_id` INTEGER NOT NULL,
+  `vendor_id` INTEGER NOT NULL,
+  FOREIGN KEY (`vendor_id`) REFERENCES `vendor` (`id`) ON DELETE RESTRICT
+);
+
+
+CREATE TABLE `customer` (
+  `id` INTEGER PRIMARY KEY,
+  `name` VARCHAR(30) NOT NULL,
+  `city` VARCHAR(30) NOT NULL,
+  `rating` INTEGER NOT NULL CHECK (`rating`>0),
+  `vendor_id` INTEGER NULL,
+  FOREIGN KEY (`vendor_id`) REFERENCES `vendor` (`id`) 
+  ON DELETE SET NULL
+);
+
+CREATE TABLE `customer` (
+  `id` INTEGER PRIMARY KEY,
+  `name` VARCHAR(30) NOT NULL,
+  `city` VARCHAR(30) NOT NULL,
+  `rating` INTEGER NOT NULL CHECK (`rating`>0),
+  `vendor_id` INTEGER NULL,
+  FOREIGN KEY (`vendor_id`) REFERENCES `vendor` (`id`) 
+  ON DELETE CASCADE
+  ON UPDATE CASCADE
+);
+
+CREATE TABLE `customer` (
+  `id` INTEGER PRIMARY KEY,
+  `name` VARCHAR(30) NOT NULL,
+  `city` VARCHAR(30) NOT NULL,
+  `rating` INTEGER NOT NULL CHECK (`rating`>0),
+  `vendor_id` INT(6) NULL,
+  FOREIGN KEY (`vendor_id`) REFERENCES `vendor` (`id`) 
+  ON DELETE SET NULL
+  ON UPDATE SET NULL
+);
+
+----- MySQL  ---------------------
 ALTER TABLE `order` ADD CONSTRAINT `order_vendor_fk` FOREIGN KEY (`vendor_id`) REFERENCES `vendor` (`id`) ON DELETE RESTRICT;
 ALTER TABLE `customer` ADD CONSTRAINT `customer_vendor_fk` FOREIGN KEY (`vendor_id`) REFERENCES `vendor` (`id`) ON DELETE SET NULL;
 
@@ -73,11 +150,14 @@ SELECT id, name, city FROM vendor WHERE city="Саранск";
 SELECT * FROM customer WHERE rating>=200 AND city="Москва";
 SELECT * FROM vendor WHERE city IN ("Москва", "Саранск");
 
-SELECT * FROM customer WHERE name LIKE "Ив%";
-SELECT * FROM customer WHERE name RLIKE "ов$";
-SELECT * FROM customer WHERE LEFT(name, 2) = "Ив";
+SELECT * FROM customer WHERE name LIKE "По%";
+SELECT * FROM customer WHERE name RLIKE "ов$"; // MySQL
+SELECT * FROM customer WHERE LEFT(name, 2) = "Ив";  // MySQL
+SELECT * FROM customer WHERE substr(name, 1, 2) = "Ив";  // SQLite
 
-SELECT CONCAT(LEFT(name,2),".-", city) AS "Фамилия-Город" FROM vendor;
+SELECT CONCAT(LEFT(name,2),".-", city) AS "Фамилия-Город" FROM vendor; // MySQL
+SELECT substr(name,1,2) || ".-" || city AS "Фамилия-Город" FROM vendor; // SQLite
+
 SELECT * FROM vendor ORDER BY name;
 
 -- 6. Aggregation
