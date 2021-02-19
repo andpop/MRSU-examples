@@ -35,7 +35,7 @@ class MyIterator implements Iterator
         echo "next: $result" . PHP_EOL;
     }
 
-    public function valid()
+    public function valid(): bool
     {
         $result = $this->current() !== false;
         echo "valid: {$result}" . PHP_EOL;

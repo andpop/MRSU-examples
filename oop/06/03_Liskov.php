@@ -59,8 +59,8 @@ class BirdRun
 
 
 $bird = new Bird();
-// $bird = new Duck();
-//$bird = new Penguin();
+$bird = new Duck();
+$bird = new Penguin();
 
 $birdRun = new BirdRun($bird);
 $birdRun->run();

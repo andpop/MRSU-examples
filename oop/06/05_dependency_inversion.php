@@ -4,7 +4,7 @@ interface FoodProvider {
     public function getFood();
 }
 
-class Wife implements IFoodProvider
+class Wife implements FoodProvider
 {
     public function getFood() {
         // ...
@@ -12,7 +12,7 @@ class Wife implements IFoodProvider
     }
 }
 
-class Restaurant implements IFoodProvider
+class Restaurant implements FoodProvider
 {
     public function getFood() {
         //...
@@ -54,10 +54,9 @@ class Male2  // Dependency injection
 
 class Male3  // Dependency inversion
 {
-
     private $foodProvider;
 
-    public function __construct(IFoodProvider $foodProvider)
+    public function __construct(FoodProvider $foodProvider)
     {
         $this->foodProvider = $foodProvider;
     }

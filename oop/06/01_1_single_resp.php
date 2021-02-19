@@ -20,7 +20,7 @@ class WrongProduct // Сохранение в БД данных о товаре 
         try {
             // save price in db
         } catch (DbException $e) {
-            $this->logger->log($e->getMessage());
+            $this->log($e->getMessage());
         }
     }
 }
