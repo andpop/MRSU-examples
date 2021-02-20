@@ -167,34 +167,34 @@ SELECT COUNT(*) FROM customer;
 -- 7. Groupping
 SELECT vendor_id, MAX(summa) FROM `order` GROUP BY vendor_id;
 SELECT vendor_id, order_date, MAX(summa) FROM `order` GROUP BY vendor_id, order_date;
-SELECT vendor_id, order_date, MAX(summa) FROM `order` GROUP BY vendor_id, order_date​ HAVING MAX(summa)>100;
+SELECT vendor_id, order_date, MAX(summa) FROM `order` GROUP BY vendor_id, order_date HAVING MAX(summa)>100;
 
 -- 8. Inner join
 SELECT customer.name, vendor.name, vendor.city FROM vendor, customer WHERE vendor.city=customer.city;
-SELECT customer.name, vendor.name, vendor.city ​FROM vendor INNER JOIN customer ON vendor.city=customer.city;
+SELECT customer.name, vendor.name, vendor.city FROM vendor INNER JOIN customer ON vendor.city=customer.city;
 
 --9. Self-join
 SELECT a.name AS Customer1, b.name AS Customer2, a.rating FROM customer a, customer b WHERE a.rating=b.rating;
 
 -- 10. Outer join
-SELECT vendor.name, customer.Pok_Name FROM vendor LEFT OUTER JOIN customer ON vendor.id = customer.id;
-SELECT vendor.name, customer.name FROM customerRIGHT OUTER JOIN vendor ON vendor.id = customer.id;
+SELECT vendor.name, customer.name FROM vendor LEFT OUTER JOIN customer ON vendor.id = customer.vendor_id;
+SELECT vendor.name, customer.name FROM customer RIGHT OUTER JOIN vendor ON vendor.id = customer.vendor_id;
 
 -- 11. Nested queries
-SELECT * FROM `order` WHERE id = (SELECT id FROM vendor WHERE name="Иванов");
-SELECT * FROM `order` WHERE id IN (SELECT id FROM vendor WHERE name="Иванов");
+SELECT * FROM `order` WHERE vendor_id = (SELECT id FROM vendor WHERE name="Иванов");
+SELECT * FROM `order` WHERE vendor_id IN (SELECT id FROM vendor WHERE name="Иванов");
 
 SELECT rating, COUNT(DISTINCT id) FROM customer GROUP BY rating HAVING rating > (SELECT AVG(rating) FROM customer WHERE city="Саранск");
 
 -- 12. Related queries
-SELECT * FROM customer a WHERE “2016-12-10” IN (SELECT order_date FROM `order` b WHERE a.id = b.id);
+SELECT * FROM customer a WHERE "2016-12-10" IN (SELECT order_date FROM `order` b WHERE a.id = b.customer_id);
 SELECT id, name FROM vendor main WHERE 1 < (SELECT COUNT(*) FROM customer WHERE vendor_id=main.id);
 SELECT * FROM `order` a WHERE summa > (SELECT AVG(summa) FROM `order` b WHERE a.customer_id = b.customer_id);
 
 -- 13. exists, any, all
 SELECT DISTINCT vendor_id FROM customer a WHERE EXISTS (SELECT * FROM customer b WHERE b.vendor_id = a.vendor_id AND b.id <> a.id);
-SELECT * FROM `order` WHERE summa > ALL (SELECT summa FROM `order` WHERE order_date=“2016-12-10”);
-SELECT * FROM `order` WHERE summa > ANY (SELECT summa FROM `order` WHERE order_date=“2016-12-10”);
+SELECT * FROM `order` WHERE summa > ALL (SELECT summa FROM `order` WHERE order_date="2016-12-10");
+SELECT * FROM `order` WHERE summa > ANY (SELECT summa FROM `order` WHERE order_date="2016-12-10");
 
 -- 14. Window functions
 SELECT *, ROW_NUMBER() OVER () AS number FROM customer;
