@@ -196,6 +196,10 @@ SELECT DISTINCT vendor_id FROM customer a WHERE EXISTS (SELECT * FROM customer b
 SELECT * FROM `order` WHERE summa > ALL (SELECT summa FROM `order` WHERE order_date="2016-12-10");
 SELECT * FROM `order` WHERE summa > ANY (SELECT summa FROM `order` WHERE order_date="2016-12-10");
 
+-- 13. CASE
+SELECT id, name AS 'Фамилия', CASE city WHEN 'Саранск' THEN 'Да' ELSE 'Нет' END 'Земляк' FROM customer;
+SELECT id, name AS 'Фамилия', CASE WHEN rating >= 300 THEN 'Молодец' WHEN rating >=200 THEN 'Неплохо' ELSE 'Старайся больше' END 'Оценка по рейтингу' FROM customer;
+
 -- 14. Window functions
 SELECT *, ROW_NUMBER() OVER () AS number FROM customer;
 SELECT *, ROW_NUMBER() OVER (ORDER BY rating DESC) AS rating_place FROM customer ORDER BY name;
@@ -208,7 +212,13 @@ SELECT *, MAX(rating) OVER () FROM customer;
 
 SELECT *, COUNT(*) OVER (PARTITION BY city) AS customers_in_city FROM customer;
 
--- 15. Views
+-- 15. Union
+SELECT name, city FROM vendor
+UNION
+SELECT name, city FROM customer
+ORDER BY city, name;
+
+-- 16. Views
 
 CREATE VIEW orders_with_names
 AS SELECT `order`.order_date, customer.name AS customer_name, vendor.name AS vendor_name, `order`.summa
@@ -217,7 +227,17 @@ WHERE `order`.customer_id = customer.id AND `order`.vendor_id = vendor.id;
 
 SELECT * FROM orders_with_names;
 
--- 15. Stored procedures, functions and triggers
+
+-- 17. Common Table Exprssions
+
+WITH
+  orders_with_names AS (SELECT `order`.order_date, customer.name AS customer_name, vendor.name AS vendor_name, `order`.summa
+  FROM `order`, customer, vendor
+  WHERE `order`.customer_id = customer.id AND `order`.vendor_id = vendor.id)
+SELECT * FROM orders_with_names ORDER BY summa;
+
+
+-- 18. Stored procedures, functions and triggers
 
 DELIMITER //
 CREATE PROCEDURE ChangeName()
@@ -230,7 +250,6 @@ DELIMITER ;
 
 CALL ChangeName();
 --------------------------------------
-​
 DELIMITER //
 CREATE PROCEDURE ChangeNameWithParameter(value varchar(30))
 BEGIN
@@ -243,7 +262,6 @@ DELIMITER ;
 CALL ChangeNameWithParameter("Бульба");
 
 -----------  Functions  --------------------------------------
-​
 SET GLOBAL log_bin_trust_function_creators = 1;
 
 # Add the following to the mysql.ini configuration file:
@@ -254,7 +272,7 @@ CREATE FUNCTION Hello(name char(20)) RETURNS char(50)
   BEGIN
     RETURN CONCAT('Привет, ', name, '!');
   END //
-​DELIMITER ';'
+DELIMITER ';'
 
 SELECT Hello('Андрей');
 -----------------------------------------
