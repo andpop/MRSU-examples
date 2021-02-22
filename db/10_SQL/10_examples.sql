@@ -44,7 +44,16 @@ CREATE TABLE `customer` (
   `city` varchar(30) NOT NULL,
   `rating` int(3) NOT NULL CHECK (`rating`>0),
   `vendor_id` int(6) NULL
-) DEFAULT CHARSET=utf8;
+) DEFAULT CHARSCREATE TABLE `customer` (
+  `id` INTEGER PRIMARY KEY,
+  `name` VARCHAR(30) NOT NULL,
+  `city` VARCHAR(30) NOT NULL,
+  `rating` INTEGER NOT NULL CHECK (`rating`>0),
+  `vendor_id` INTEGER NULL,
+  FOREIGN KEY (`vendor_id`) REFERENCES `vendor` (`id`) 
+  ON DELETE SET NULL
+);
+ET=utf8;
 
 CREATE TABLE `order` (
   `id` int(6) NOT NULL AUTO_INCREMENT PRIMARY KEY,
