@@ -213,9 +213,9 @@ SELECT *, MAX(rating) OVER () FROM customer;
 SELECT *, COUNT(*) OVER (PARTITION BY city) AS customers_in_city FROM customer;
 
 -- 15. Union
-SELECT name, city FROM vendor
+SELECT name, city, 'Продавец' AS 'Роль' FROM vendor
 UNION
-SELECT name, city FROM customer
+SELECT name, city, 'Покупатель' FROM customer
 ORDER BY city, name;
 
 -- 16. Views
