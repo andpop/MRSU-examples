@@ -60,6 +60,8 @@ class ScreenOnState
 
 class MobileScreen
 {
+    public $state;
+
     public function __construct()
     {
         // Начальное состояние
@@ -93,7 +95,10 @@ class MobileScreen
 }
 
 
+/////////////////////////////////////////////////////////////////////////////
 // ===== Клиентский код ===================
+/////////////////////////////////////////////////////////////////////////////
+
 $screen = new MobileScreen();
 $screen->touch();
 
