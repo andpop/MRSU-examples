@@ -1,1 +1,0 @@
-C:37:"PHPUnit\Runner\DefaultTestResultCache":155:{a:2:{s:7:"defects";a:0:{}s:5:"times";a:2:{s:37:"App\Tests\FractionTest::testReduction";d:0.012;s:46:"App\Tests\FractionTest::testTextRepresentation";d:0;}}}
