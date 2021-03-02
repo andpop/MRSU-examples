@@ -25,3 +25,12 @@ const anotherBond = {
 
 anotherBond.raiseSalary(20);
 console.log({anotherBond});
+
+const badMethod = {
+    salary: 100000,
+    raiseSalary: percent => this.salary *= (1 + percent / 100)
+};
+
+badMethod.raiseSalary(10);
+console.log({badMethod});
+
