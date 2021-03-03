@@ -1,10 +1,10 @@
 const bond = {
-    name: 'James Bond', 
-    salary: 50000,
-    raiseSalary: function(percent) {
-        console.log('this=', this);
-        this.salary *= (1 + percent / 100);
-    }
+  name: "James Bond",
+  salary: 50000,
+  raiseSalary: function (percent) {
+    console.log("this=", this);
+    this.salary *= 1 + percent / 100;
+  },
 };
 
 bond.raiseSalary(10);
@@ -18,4 +18,3 @@ bond.raiseSalary(10);
 // };
 
 // badThis.raiseSalary(10);
-
