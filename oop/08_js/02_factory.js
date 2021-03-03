@@ -15,3 +15,7 @@ const bond2 = createEmployee('John Bond', 45000);
 console.log({bond1});
 console.log({bond2});
 
+// const f1 = bond1.raiseSalary;
+// const f2 = bond2.raiseSalary;
+
+// console.log(f1 === f2);

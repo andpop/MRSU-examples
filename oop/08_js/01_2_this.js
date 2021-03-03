@@ -9,13 +9,13 @@ const bond = {
 
 bond.raiseSalary(10);
 
-const badThis = {
-    salary: 100000,
-    raiseSalary: percent => {
-        console.log('this=', this);
-        this.salary *= (1 + percent / 100);
-    }
-};
+// const badThis = {
+//     salary: 100000,
+//     raiseSalary: percent => {
+//         console.log('this=', this);
+//         this.salary *= (1 + percent / 100);
+//     }
+// };
 
-badThis.raiseSalary(10);
+// badThis.raiseSalary(10);
 
