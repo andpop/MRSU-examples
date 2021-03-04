@@ -1,26 +1,15 @@
-const a = {n: 1}
-const b = {m: 2}
+const employeePrototype = {
+        raiseSalary(percent) {
+            this.salary *= (1 + percent / 100);
+        }
+};
 
-Object.setPrototypeOf(a, b)
+function createEmployee(name, salary) {
+    const result = { name, salary };
+    Object.setPrototypeOf(result, employeePrototype);
 
-// const c = Object.getPrototypeOf(a);
-
-// console.log(c)
-// console.log(a.m)
-
-
-// const employeePrototype = {
-//         raiseSalary(percent) {
-//             this.salary *= (1 + percent / 100);
-//         }
-// };
-
-// function createEmployee(name, salary) {
-//     const result = { name, salary };
-//     Object.setPrototypeOf(result, employeePrototype);
-
-//     return result;
-// };
+    return result;
+};
 
 // // ----------------------------------------------
 // const bond1 = createEmployee('James Bond', 100000);
