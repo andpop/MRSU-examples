@@ -9,12 +9,13 @@ Employee.prototype.raiseSalary = function (percent) {
 };
 
 bond = new Employee("James Bond", 100000);
-console.log({ bond });
+// console.log({ bond });
 
 // console.log(Object.getPrototypeOf(bond));
-// bond.raiseSalary(10);
-// console.log({bond});
+// bond.raiseSalary(12);
+// console.log({ bond });
 //
 //
 // console.log(Employee.prototype.constructor);
 // console.log(bond.constructor);
+//

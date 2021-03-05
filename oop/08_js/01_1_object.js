@@ -1,11 +1,11 @@
-const bond1 = {name: 'James Bond', salary: 50000};
+const bond1 = { name: "James Bond", salary: 50000 };
 
-// const bond2 = {name: 'James Bond', salary: 50000};
+const bond2 = { name: "James Bond", salary: 50000 };
 
 // console.log(bond1 === bond2);
 
 // const bond = {
-//     name: 'James Bond', 
+//     name: 'James Bond',
 //     salary: 50000,
 //     raiseSalary: function(percent) {
 //         this.salary *= (1 + percent / 100);
