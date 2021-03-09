@@ -6,6 +6,7 @@ const a = {
 }
 
 a.f();  // 1
+a['f']();  // 1
 
 const func = a.f;
 func(); // undefined
