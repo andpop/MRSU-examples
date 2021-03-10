@@ -10,6 +10,7 @@ class BankAccount {
 
     notifyObservers() {
         for (let i = 0; i < this.observers.length; i++) {
+            console.log(this)
             this.observers[i]()
         }
     }
@@ -26,8 +27,14 @@ class User {
     }
 
     start() {
-        // acct.addObserver(() => { this.log('Еще денег!') })
-        acct.addObserver(function() { this.log('Еще денег!') })
+        acct.addObserver(() => { 
+            console.log(this);
+            this.log('Еще денег!') 
+        });
+        // acct.addObserver(function() { 
+        //     console.log(this);
+        //     this.log('Еще денег!') 
+        // })
         acct.deposit(1000)
     }
 }
