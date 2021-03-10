@@ -33,7 +33,41 @@ group by gen;
 select Genres as 'The most widespread genre', max(Number) as 'Number of films' from T8;
 drop view T8;
 -------------------------------------------
-create view statistics_genres as select value, genre from ((select count(*) as value, '(no genres listed)' as genre from movies where instr(movies.genres, '(no genres listed)') > 0)) union select value, genre from (select count(*) as value, 'Action' as genre from movies where instr(movies.genres, 'Action') > 0) union select value, genre from (select count(*) as value, 'Adventure' as genre from movies where instr(movies.genres, 'Adventure') > 0) union select value, genre from (select count(*) as value, 'Animation' as genre from movies where instr(movies.genres, 'Animation') > 0) union select value, genre from (select count(*) as value, 'Children' as genre from movies where instr(movies.genres, 'Children') > 0) union select value, genre from (select count(*) as value, 'Comedy' as genre from movies where instr(movies.genres, 'Comedy') > 0) union select value, genre from (select count(*) as value, 'Crime' as genre from movies where instr(movies.genres, 'Crime') > 0) union select value, genre from (select count(*) as value, 'Documentary' as genre from movies where instr(movies.genres, 'Documentary') > 0) union select value, genre from (select count(*) as value, 'Drama' as genre from movies where instr(movies.genres, 'Drama') > 0) union select value, genre from (select count(*) as value, 'Fantasy' as genre from movies where instr(movies.genres, 'Fantasy') > 0) union select value, genre from (select count(*) as value, 'Film-Noir' as genre from movies where instr(movies.genres, 'Film-Noir') > 0) union select value, genre from (select count(*) as value, 'Horror' as genre from movies where instr(movies.genres, 'Horror') > 0) union select value, genre from (select count(*) as value, 'Musical' as genre from movies where instr(movies.genres, 'Musical') > 0) union select value, genre from (select count(*) as value, 'Mystery' as genre from movies where instr(movies.genres, 'Mystery') > 0) union select value, genre from (select count(*) as value, 'Romance' as genre from movies where instr(movies.genres, 'Romance') > 0) union select value, genre from (select count(*) as value, 'Sci-Fi' as genre from movies where instr(movies.genres, 'Sci-Fi') > 0) union select value, genre from (select count(*) as value, 'Thriller' as genre from movies where instr(movies.genres, 'Thriller') > 0) union select value, genre from (select count(*) as value, 'War' as genre from movies where instr(movies.genres, 'War') > 0) union select value, genre from (select count(*) as value, 'Western' as genre from movies where instr(movies.genres, 'Western') > 0) union select value, genre from (select count(*) as value, 'IMAX' as genre from movies where instr(movies.genres, 'IMAX') > 0);
+
+create view statistics_genres as 
+select value, genre from ((select count(*) as value, '(no genres listed)' as genre from movies where instr(movies.genres, '(no genres listed)') > 0)) 
+UNION 
+    select value, genre from (select count(*) as value, 'Action' as genre from movies where instr(movies.genres, 'Action') > 0) union select value, genre from (select count(*) as value, 'Adventure' as genre from movies where instr(movies.genres, 'Adventure') > 0) 
+UNION 
+    select value, genre from (select count(*) as value, 'Animation' as genre from movies where instr(movies.genres, 'Animation') > 0) union select value, genre from (select count(*) as value, 'Children' as genre from movies where instr(movies.genres, 'Children') > 0) 
+UNION 
+select value, genre from (select count(*) as value, 'Comedy' as genre from movies where instr(movies.genres, 'Comedy') > 0) union select value, genre from (select count(*) as value, 'Crime' as genre from movies where instr(movies.genres, 'Crime') > 0) 
+UNION 
+select value, genre from (select count(*) as value, 'Documentary' as genre from movies where instr(movies.genres, 'Documentary') > 0) 
+UNION 
+select value, genre from (select count(*) as value, 'Drama' as genre from movies where instr(movies.genres, 'Drama') > 0) 
+UNION 
+select value, genre from (select count(*) as value, 'Fantasy' as genre from movies where instr(movies.genres, 'Fantasy') > 0) 
+UNION 
+select value, genre from (select count(*) as value, 'Film-Noir' as genre from movies where instr(movies.genres, 'Film-Noir') > 0) 
+UNION 
+select value, genre from (select count(*) as value, 'Horror' as genre from movies where instr(movies.genres, 'Horror') > 0) 
+UNION 
+select value, genre from (select count(*) as value, 'Musical' as genre from movies where instr(movies.genres, 'Musical') > 0) 
+UNION 
+select value, genre from (select count(*) as value, 'Mystery' as genre from movies where instr(movies.genres, 'Mystery') > 0) 
+UNION 
+select value, genre from (select count(*) as value, 'Romance' as genre from movies where instr(movies.genres, 'Romance') > 0) 
+UNION 
+select value, genre from (select count(*) as value, 'Sci-Fi' as genre from movies where instr(movies.genres, 'Sci-Fi') > 0) 
+UNION 
+select value, genre from (select count(*) as value, 'Thriller' as genre from movies where instr(movies.genres, 'Thriller') > 0) 
+UNION 
+select value, genre from (select count(*) as value, 'War' as genre from movies where instr(movies.genres, 'War') > 0) 
+UNION 
+select value, genre from (select count(*) as value, 'Western' as genre from movies where instr(movies.genres, 'Western') > 0) 
+UNION 
+select value, genre from (select count(*) as value, 'IMAX' as genre from movies where instr(movies.genres, 'IMAX') > 0);
 
 select max(value) as count, genre as genre_title from statistics_genres;
 drop view statistics_genres;
