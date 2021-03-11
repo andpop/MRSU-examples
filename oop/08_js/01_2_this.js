@@ -1,3 +1,4 @@
+'use strict'
 const bond = {
   name: "James Bond",
   salary: 50000,
