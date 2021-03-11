@@ -8,16 +8,15 @@ class BankAccount {
         this.observers.push(f)
     }
 
-    notifyObservers() {
+    notifyObservers(msg) {
         for (let i = 0; i < this.observers.length; i++) {
-            console.log(this)
-            this.observers[i]()
+            this.observers[i](msg)
         }
     }
 
     deposit(amount) {
         this.balance += amount
-        this.notifyObservers()
+        this.notifyObservers(`Пополнение баланса на ${amount}`);
     }
 }
 
@@ -27,14 +26,12 @@ class User {
     }
 
     start() {
-        acct.addObserver(() => { 
-            console.log(this);
-            this.log('Еще денег!') 
-        });
-        // acct.addObserver(function() { 
-        //     console.log(this);
-        //     this.log('Еще денег!') 
-        // })
+        // acct.addObserver(msg => { 
+        //     this.log(msg) 
+        // });
+        acct.addObserver(function(msg) { 
+            this.log(msg) 
+        })
         acct.deposit(1000)
     }
 }

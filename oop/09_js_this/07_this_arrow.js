@@ -31,3 +31,12 @@ console.log('-----------');
 
 b.f();
 
+console.log('=====================================');
+
+const obj = {
+    f() {console.log(this)},
+    g: () => {console.log(this)}
+};
+
+obj.f();
+obj.g();
