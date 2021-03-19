@@ -1,4 +1,3 @@
-// calc.test.js
 const Calc = require('../src/calc');
 const calc = new Calc();
 
@@ -16,13 +15,13 @@ describe('div', () => {
         expect(calc.div(10, 5)).toBe(2);
     });
 
-    // test('на 0', () => {
-    //     expect(calc.div(10, 0)).toBe(10);
-    // });
+    test('на 0', () => {
+        expect(calc.div(10, 0)).toBe(10);
+    });
 
-    // test('без второго аргумента', () => {
-    //     expect(calc.div(10)).toBe(10);
-    // });
+    test('без второго аргумента', () => {
+        expect(calc.div(10)).toBe(10);
+    });
 
     test('на не число', () => {
         expect(calc.div(10, 'sdfdfdf')).toBe(10);

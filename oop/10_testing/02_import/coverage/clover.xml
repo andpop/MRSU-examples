@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1616091737032" clover="3.2.0">
-  <project timestamp="1616091737032" name="All files">
-    <metrics statements="5" coveredstatements="5" conditionals="4" coveredconditionals="4" methods="3" coveredmethods="3" elements="12" coveredelements="12" complexity="0" loc="5" ncloc="5" packages="1" files="1" classes="1"/>
+<coverage generated="1616167614389" clover="3.2.0">
+  <project timestamp="1616167614390" name="All files">
+    <metrics statements="5" coveredstatements="4" conditionals="4" coveredconditionals="4" methods="3" coveredmethods="2" elements="12" coveredelements="10" complexity="0" loc="5" ncloc="5" packages="1" files="1" classes="1"/>
     <file name="calc.js" path="/home/andrey/projects/mrsu-examples/oop/10_testing/02_import/src/calc.js">
-      <metrics statements="5" coveredstatements="5" conditionals="4" coveredconditionals="4" methods="3" coveredmethods="3"/>
+      <metrics statements="5" coveredstatements="4" conditionals="4" coveredconditionals="4" methods="3" coveredmethods="2"/>
       <line num="4" count="1" type="stmt"/>
-      <line num="8" count="1" type="stmt"/>
+      <line num="8" count="0" type="stmt"/>
       <line num="12" count="7" type="cond" truecount="4" falsecount="0"/>
       <line num="13" count="6" type="stmt"/>
       <line num="16" count="7" type="stmt"/>

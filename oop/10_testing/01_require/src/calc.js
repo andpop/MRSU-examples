@@ -1,4 +1,3 @@
-// src/calc.js
 class Calc {
     sum(a, b) {
         return a + b;
@@ -9,9 +8,9 @@ class Calc {
     }
 
     div(a, b) {
-        if (!b || !isFinite(b)) {
-            b = 1;
-        }
+        // if (!b || !isFinite(b)) {
+        //     b = 1;
+        // }
 
         return a / b;
     }
