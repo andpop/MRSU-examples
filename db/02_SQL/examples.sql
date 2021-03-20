@@ -53,7 +53,7 @@ CREATE TABLE `customer` (
   FOREIGN KEY (`vendor_id`) REFERENCES `vendor` (`id`) 
   ON DELETE SET NULL
 );
-ET=utf8;
+SET=utf8;
 
 CREATE TABLE `order` (
   `id` int(6) NOT NULL AUTO_INCREMENT PRIMARY KEY,
