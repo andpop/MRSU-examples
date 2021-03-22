@@ -14,3 +14,6 @@ INSERT INTO Fruits (rowid, Fruit, State, Price) VALUES (23, 'Orange', 'CA', 1.05
 
 
 CREATE INDEX Idx1 ON fruits(fruit);
+CREATE INDEX Idx2 ON fruits(state);
+CREATE INDEX Idx3 ON Fruits(fruit, state);
+CREATE INDEX Idx4 ON Fruits(fruit, state, price);
