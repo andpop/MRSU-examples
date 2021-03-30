@@ -1,0 +1,1 @@
+Get-ChildItem -Path c:\odb\201612*\*\od_*.htm | group-object -property {$_.Directory.Name} –noelement

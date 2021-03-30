@@ -1,0 +1,347 @@
+<HTML>
+<title>Параметры АРМа</title>
+<HEAD>
+<meta http-equiv="content-type" content="text/html; charset=Windows-1251">
+<HTA:Application
+    Border = Thick
+    BorderStyle = Complex
+    ShowInTaskBar = Yes
+    ApplicationName="ArmUtil"
+    Scroll=No
+    SingleInstance=No
+    MaximizeButton = Yes
+    MinimizeButton = Yes
+    Version = "1.10"
+>
+<SCRIPT LANGUAGE="VBScript">
+
+Dim objShell, WshNetwork
+Dim strDefaultFolder
+Dim objDocument
+Dim strComputer, strUser, strReg
+Dim strIP, strMAC, strJavaVer
+Dim strFreeSpace
+dIM intRes
+Const HKLM = &H80000002
+
+
+
+Function Ping(strAddr)
+' Проверяем доступность компьютера с помощью команды PING 
+    Set objScriptExec = objShell.Exec("%comspec% /c ping.exe -n 1 " & strAddr)
+    strPingResults = LCase(objScriptExec.StdOut.ReadAll)
+    
+' Возвращаем результат: 
+  Ping = InStr(strPingResults, "ttl=")
+End Function
+
+Function GetIP
+' Получаем IP-адрес с помощью команды IPConfig 
+    Set objScriptExec = objShell.Exec("%comspec% /c ipconfig | find ""IP""" )
+    strIP = objScriptExec.StdOut.ReadAll
+    strIP = Mid(strIP, InStr(strIP,":")+1, 15)
+    
+    GetIP = strIP
+End Function
+
+Function JavaVer
+' Определение версии Java
+	Set oReg = GetObject("winmgmts:{impersonationLevel=impersonate}!\\.\root\default:StdRegProv")
+	sValueKey=Null
+	sValueKey1 = ""
+	strTT=""
+	oReg.GetStringValue HKLM , "SOFTWARE\JavaSoft\Java Runtime Environment","CurrentVersion", sValueKey
+	If IsNull(sValueKey) Then
+		JavaVer = "Похоже, что Java не установлена"
+	Else
+		If Right(sValueKey, 1)>7 Then
+			oReg.GetStringValue HKLM , "SOFTWARE\JavaSoft\Java Runtime Environment","BrowserJavaVersion", sValueKey1
+			strTT = "SOFTWARE\JavaSoft\Java Runtime Environment\" & sValueKey & ".0_" & Mid(sValueKey1, 4, 2) & "\MSI"
+			oReg.GetStringValue HKLM, strTT, "FullVersion", sValueKey
+	    	JavaVer = sValueKey
+		Else
+			oReg.GetStringValue HKLM , "SOFTWARE\JavaSoft\Java Runtime Environment","Java" & Right(sValueKey, 1) & "FamilyVersion", sValueKey
+			strTT = "SOFTWARE\JavaSoft\Java Runtime Environment\" & sValueKey & "\MSI"
+			oReg.GetStringValue HKLM, strTT, "FullVersion", sValueKey
+	    	JavaVer = sValueKey
+	    End If
+	End If
+End Function
+'----------------------------------------------------------------------
+Sub window_onLoad
+
+  Set objDocument = self.Document
+  Set objShell = CreateObject("WScript.Shell")
+  Set WshNetwork = CreateObject("WScript.Network")
+
+  'On Error Resume Next
+  
+  objDocument.all.txtCompName.InnerHTML = "Имя компьютера: " & "<B>" & WshNetwork.ComputerName
+  objDocument.all.txtUserName.InnerHTML = "Имя пользователя: " & "<B>" & WshNetwork.UserName
+  objDocument.all.txtIP.InnerHTML = "IP-адрес: " & "<B>" & GetIP
+  objDocument.all.txtJavaVer.InnerHTML = "Версия Java: " & "<B>" & JavaVer
+  if ping("fs-netapp-ank1") then
+    objDocument.all.txtLAN.InnerHTML = "Локальная сеть (\\fs-netapp-ank1): <B> доступна"
+  else
+    objDocument.all.txtLAN.InnerHTML = "Локальная сеть (\\fs-netapp-ank1): <B> НЕДОСТУПНА"
+  end if
+  if ping("wbs") then
+    objDocument.all.txtWAN.InnerHTML = "Сервер Софии (\\Wbs): <B> доступен"
+  else
+    objDocument.all.txtWAN.InnerHTML = "Сервер Софии (\\Wbs): <B> НЕДОСТУПЕН"
+  end if
+
+  GetDriveInfo
+  objDocument.all.txtFreeSpace.InnerHTML = "На диске C: свободно, мегабайт: " & "<B>" &  strFreeSpace
+  
+End Sub
+
+
+'-----------------------------------------------------------------
+' Получение свободного места на диске C
+Sub GetDriveInfo
+  Dim FSO, D
+
+  Set FSO = CreateObject("Scripting.FileSystemObject")
+  //Создаем объект Drive для диска C
+  Set D = FSO.GetDrive("C:")
+  //Вычисляем объем свободного пространства диска в мегабайтах
+  strFreeSpace=FormatNumber(D.FreeSpace/(1024*1024),2)
+End Sub
+
+'-----------------------------------------------------------------
+
+Sub CheckServer(strAddress)
+  objShell.Run("ping.exe -t " & strAddress)
+End Sub
+'-----------------------------------------------------------------
+
+Sub ATMClear
+  objShell.Run("\\fs-netapp-ank1\8589$\Filials_8589\_Общая\!Tools\ATM\ATMCLEAR.EXE")
+End Sub
+'-----------------------------------------------------------------
+
+Sub CheckSign
+  Dim FSO
+
+  Set FSO = CreateObject("Scripting.FileSystemObject")
+
+  If objDocument.all.SberSignNet.Checked Then
+    strSberSignPath="\\fs-netapp-ank1\8589$\sign\SBSIGN_2007\SBSIGN45\sbersign.exe /p /m /d=\\File_server\sign\SOFI\sign.dat"
+  Else
+    If FSO.FileExists("C:\Program Files\Infocrypt\Sbersign\sbersign.exe") Then
+      strSberSignPath="""C:\Program Files\Infocrypt\Sbersign\sbersign.exe /p /m /d=\\File_server\sign\SOFI\sign.dat"""
+    End If
+    If FSO.FileExists("C:\Program Files\Sbersign\sbersign.exe") Then
+      strSberSignPath="""C:\Program Files\Sbersign\sbersign.exe""" & "/p /m /d=\\File_server\sign\SOFI\sign.dat"
+    End If
+    If FSO.FileExists("C:\Sbersign\sbersign.exe") Then 
+      strSberSignPath="""C:\Sbersign\sbersign.exe /p /m /d=\\fs-netapp-ank1\8589$\sign\SOFI\sign.dat"""
+    End If
+  End If
+  objShell.Run strSberSignPath
+End Sub
+'-----------------------------------------------------------------
+
+Sub SignFile
+  objShell.Run("\\fs-netapp-ank1\8589$\sign\SBSIGN_2007\SBSIGN45\sbersign.exe /w /m=p:\")
+  'objShell.Run("\\file_server\sign\SBSIGN_2007\SBSIGN45\sbersign.exe /w ")
+End Sub
+'-----------------------------------------------------------------
+
+Sub IPConfig
+  objShell.Run("cmd /c ipconfig /all && pause")
+End Sub
+'-----------------------------------------------------------------
+
+Sub ClearCache
+  Dim s
+  MsgBox("Для очистки кэша закройте программу Outlook и нажмите OK.")
+  s="cmd /c echo Y | del /s " & Chr(34) & "%userprofile%\AppData\Local\Microsoft\FORMS\*.*" & Chr(34)
+  objShell.Run(s)
+  s="cmd /c for /f %d in (" & Chr(39) & "dir /b " & Chr(34) & "%userprofile%\AppData\Local\Microsoft\FORMS" & Chr(34) & Chr(39)
+  s=s & ") do rmdir /s /q " & Chr(34) & "%userprofile%\AppData\Local\Microsoft\FORMS\%d" & Chr(34) 
+  objShell.Run(s)
+  MsgBox("Кэш очищен. Перезагрузите Outlook.")
+End Sub
+'-----------------------------------------------------------------
+
+Sub LocalAdmin
+  objShell.Run("cmd /c  net localgroup Администраторы && pause")
+End Sub
+'-----------------------------------------------------------------
+
+Sub PingHost
+  strAddr=InputBox("Введите имя или адрес узла (в формате XXX.XXX.XXX.XXX)")
+  s="cmd /c ping " & strAddr & " && pause"
+  objShell.Run(s)
+End Sub
+'-----------------------------------------------------------------
+
+Sub About
+  MsgBox("Параметры АРМа Сбербанка" & vbCRLF &  "(c) Уругвайская техническая полиция (УТП) по ГОСБ №8589" & vbCRLF &  "and УдРМ УВиСАС," & vbCRLF &  "2010-2016 гг")
+
+End Sub
+'-----------------------------------------------------------------
+
+Sub UserInfo
+  s="cmd /c net user " & WshNetwork.UserName & " /domain && pause"
+  objShell.Run(s)
+
+End Sub
+'-----------------------------------------------------------------
+
+Sub Matric
+  objShell.Run("cmd /c \\fs-netapp-ank1\8589$\upd$\FRM\PRINTER\matr.bat")
+End Sub
+'-----------------------------------------------------------------
+
+Sub Laser
+  objShell.Run("cmd /c \\fs-netapp-ank1\8589$\upd$\FRM\PRINTER\laser.bat")
+End Sub
+'-----------------------------------------------------------------
+
+</SCRIPT>
+
+<SCRIPT LANGUAGE="VBScript">
+
+'-----добавлено из ВВБшного CleanCache.vbs------------------------
+
+Function VVB_CleanCache()
+
+MsgBox "Закройте все приложения и сохраните данные. После выполнения скрипта компьютер будет перезагружен.", 0, "Предупреждение"
+
+On Error Resume Next
+
+on error resume next 
+ Set S = CreateObject("Wscript.Shell") 
+ set FSO=createobject("scripting.filesystemobject") 
+ s.run"taskkill /f /im outlook.exe",0
+ s.run"taskkill /f /im winword.exe",0
+
+set WshShell = WScript.CreateObject("WScript.Shell")
+strFldr = WshShell.ExpandEnvironmentStrings("%USERPROFILE%")+"\AppData\Local\Microsoft\FORMS"
+Set objFSO = CreateObject("Scripting.FileSystemObject")
+
+ClearFolder strFldr
+
+Set OpSysSet = GetObject("winmgmts:{(Shutdown)}" ).ExecQuery("select * from Win32_OperatingSystem where Primary=true" )
+For Each OpSys In OpSysSet
+OpSys.Reboot()
+Next
+End Function
+
+Function ClearFolder(sFldr)
+   On Error Resume Next
+   Dim oD, cF, cD, oI
+
+   Set oD = objFSO.GetFolder(sFldr)
+   Set cF = oD.Files
+   Set cD = oD.SubFolders
+
+   For Each oI In cF
+      oI.Attributes = 0
+      oI.Delete
+   Next
+
+   For Each oI In cD
+      ClearFolder oI.Path
+      oI.Attributes = 0
+      oI.Delete
+   Next
+End Function
+
+'-----------------------------------------------------------------
+</SCRIPT>
+
+<!--   *****************************************************************  -->
+<!--                         Main HTML Form                               -->
+<!--   *****************************************************************  -->
+</HEAD>
+<BODY BGCOLOR="silver" l="no">
+<p align = "right">
+<SCRIPT Language="VBScript">
+	document.write("Вер: 1.10")
+</script>
+<INPUT TYPE="BUTTON" VALUE="О программе" NAME="btnAbout"
+         onClick="About">
+
+<hr>
+
+<p align = "left">
+<FORM NAME="MainForm">
+<SPAN ID="txtCompName">
+Имя компьютера: 
+</SPAN>
+<br>
+<SPAN ID="txtUserName">
+Имя пользователя: 
+</SPAN>
+<br>
+<SPAN ID="txtIP">
+IP-адрес: 
+</SPAN>
+<br>
+<SPAN ID="txtJavaVer">
+Версия Java: 
+</SPAN>
+<br>
+<hr>
+<SPAN ID="txtFreeSpace">
+На диске C: свободно: 
+</SPAN>
+</B>
+<hr>
+<SPAN ID="txtLAN">
+Локальная сеть (\\fs-netapp-ank1): 
+</SPAN>
+<br>
+<SPAN ID="txtWAN">
+София (\\Wbs): 
+</SPAN>
+
+<hr>
+
+<INPUT TYPE="BUTTON" VALUE="Проверить связь (fs-netapp-ank1)" NAME="btnCheckFileServer"
+         onClick="CheckServer('fs-netapp-ank1')">
+<INPUT TYPE="BUTTON" VALUE="Проверить связь (София)" NAME="btnCheckWb"
+         onClick="CheckServer('wbs')">
+<INPUT TYPE="BUTTON" VALUE="Ping" NAME="btnPingHost"
+         onClick="PingHost">
+
+<hr>
+<INPUT TYPE="BUTTON" VALUE="Очистить таблетку" NAME="btnATMClear"
+         onClick="ATMClear">
+<INPUT TYPE="BUTTON" VALUE="Очистить кэш Outlook" NAME="btnClearCache"
+
+         onClick="ClearCache"><br><br> Внимание! Нажав на эту кнопку, Вы <u>перезагрузите компьютер</u>!
+<INPUT TYPE="BUTTON" VALUE="Глубокая очистка кэша Outlook" NAME="btnClearCache"
+         onClick="VVB_CleanCache()">
+<hr>
+<INPUT TYPE="BUTTON" VALUE="Проверить подпись" NAME="btnCheckSign"
+         onClick="CheckSign">
+<INPUT TYPE="BUTTON" VALUE="Подписать файл" NAME="btnSignFile"
+         onClick="SignFile">
+<INPUT TYPE=RADIO ID="SberSignNet" NAME="rbSberSign" VALUE="SberSignNet" CHECKED>SberSign в сети
+<INPUT TYPE=RADIO ID="SberSignLoc" NAME="rbSberSign" VALUE="SberSignLoc" DISABLED>SberSign локально
+<hr>
+<SPAN ID="printerINI">
+Выбор принтера, на который осуществляется <br>печать ордеров   :    
+</SPAN>
+<INPUT TYPE="BUTTON" VALUE="МАТРИЧНЫЙ" NAME="btnPrinter"
+         onClick="Matric">
+<INPUT TYPE="BUTTON" VALUE="ЛАЗЕРНЫЙ" NAME="btnPrinter"
+         onClick="Laser">
+<hr>
+<INPUT TYPE="BUTTON" VALUE="Сетевые параметры" NAME="btnIPConfig"
+         onClick="IPConfig">
+<INPUT TYPE="BUTTON" VALUE="Локальные администраторы" NAME="btnLocalAdmin"
+         onClick="LocalAdmin">
+<INPUT TYPE="BUTTON" VALUE="Информация о пользователе" NAME="btnUserInfo"
+         onClick="UserInfo">
+<hr>
+<input type="button" value="IT Помощник ВВБ" onclick=javascript:window.open("http://expeditor/support/");>
+
+</FORM>
+</BODY>
+</HTML>

@@ -1,0 +1,95 @@
+<HTML>
+<TITLE>WMI-утилита администратора</TITLE >
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1251">
+</HEAD>
+<BODY BGCOLOR="silver">
+<FORM NAME="MainForm">
+<TABLE BORDER="0" WIDTH="100%" STYLE="FONT-SIZE: 10pt; FONT-FAMILY: Д Arial">
+  <TR>
+    <TD SPAN="3">Домен&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <SPAN ID="optDomain">
+      <SELECT STYLE="WIDTH: 150px" NAME="selDomain">
+      </SELECT>
+      </SPAN>
+    </TD>
+    <TD>  
+       Имя&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <INPUT NAME="txtUser" SIZE=21Д style="WIDTH: 174px; HEIGHT: 22px"> 
+    </TD>
+  </TR>
+  <TR>
+    <TD> 
+      Компьютер 
+      <SPAN ID="optStation">
+      <SELECT STYLE="WIDTH: 150px" NAME="selStation">
+      </SELECT>
+      </SPAN>
+    </TD>
+    <TD>
+      Пароль <INPUT TYPE=password NAME="txtPassword" SIZE=17> &nbsp;
+      <INPUT TYPE="button" VALUE="   Подключить   " NAME="btnConnect">
+    </TD>
+  </TR>
+  <TR>
+    <TD COLSPAN=3> 
+      <HR>
+    </TD>
+  </TR>
+  <TR>
+    <TD VALIGN="top" WIDTH="40%">
+      <FIELDSET>
+        <LEGEND>Рабочая станция</LEGEND>
+        &nbsp;MAC адрес&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+        <INPUT SIZE=17 NAME="txtMAC"><BR>
+        &nbsp;IP адрес&nbsp;&nbsp;&nbsp;&nbsp; 
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+        <INPUT SIZE=17 NAME="txtIP"><BR>
+        &nbsp;Пользователь&nbsp;&nbsp; 
+        <INPUT NAME="txtCurrUser" SIZE=17> <BR>&nbsp;
+      </FIELDSET>
+</TD>
+    <TD>
+       <FIELDSET>
+         <LEGEND>Действия</LEGEND>
+         <INPUT ID="LogoffUser" TYPE=radio NAME="rbAction"Д VALUE="Logoff">
+         <LABEL FOR="LogoffUser">Завершение сеанса пользователя
+         </LABEL><BR>
+         <INPUT ID="Restart" TYPE=radio NAME="rbAction" VALUE="Restart">
+         <LABEL FOR="Restart">Перезагрузка компьютера</LABEL><BR>
+         <INPUT ID="Shutdown" TYPE=radio NAME="rbAction"Д VALUE="Shutdown">
+         <LABEL FOR="Shutdown">Выключение компьютера</LABEL><BR>
+         <INPUT TYPE="button" VALUE="   Выполнить действие   " 
+           NAME="btnExecuteAction">
+       </FIELDSET>
+    </TD>
+   </TR>
+   <TR>
+     <TD>
+       <FIELDSET>
+         <LEGEND>Запущенные процессы</LEGEND>
+         <SPAN ID="optProcess">
+         <SELECT STYLE ="WIDTH: 280px" NAME="selProcess" SIZE=10 SINGLE>
+         </SELECT>
+         </SPAN>
+       </FIELDSET>
+     </TD>
+    <TD VALIGN="top">
+       <FIELDSET>
+         <LEGEND>Хронология запуска процессов</LEGEND>
+         <TEXTAREA name=taEventList rows=10 cols=50></TEXTAREA>
+       </FIELDSET>
+    </TD>
+   </TR>
+   <TR>
+     <TD SPAN="3">
+       <INPUT TYPE=checkbox NAME="cbUserProc">
+       Процессы пользователя &nbsp;
+       <INPUT TYPE="button" VALUE="Завершить" NAME="btnTerminate">
+     </TD>
+   </TR>  
+</TABLE>
+<BR>
+
+</FORM>
+</BODY>
+</HTML>

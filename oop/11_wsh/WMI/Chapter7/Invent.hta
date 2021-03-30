@@ -1,0 +1,553 @@
+<HTML>
+<TITLE>Инвентаризация компьютеров</TITLE>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;   charset=windows-1251">
+<HTA:Application
+    Border = Thick
+    BorderStyle = Complex
+    ShowInTaskBar = Yes
+    APPLICATIONNAME="Invent"
+    SCROLL=No
+    SINGLEINSTANCE=Yes
+    MaximizeButton = No
+    MinimizeButton = No
+>
+<SCRIPT LANGUAGE="VBScript">
+
+' Объявляем глобальные переменные
+Dim objDocument       ' Объект документ
+Dim strComputer       ' Имя компьютера
+Dim strNamespace      ' Имя пространства имен
+Dim objService        ' Объект SWbemService
+Dim strSQLCommand     ' Строка для создания таблицы
+Dim objConnect        ' Объект ADODB.Connection
+Dim objRecordset      ' Объект ADODB.Recordset
+Dim Obj               ' Элемент коллекции
+Dim Col               ' Коллекция экземпляров класса WMI
+Dim strResult         ' Строка результата
+Dim objDictionary     ' Объект Dictionary
+Dim objItem           ' Элемент объекта Dictionary
+
+' Объявляем константы
+const adExecuteNoRecords = &H80
+const adUseClient = 3
+const adOpenStatic = 3
+const adLockOptimistic = 3
+' Константа для задания режима открытия файла
+Const ForReading = 1
+
+'-----------------------------------------------------------------
+'Процедура-обработчик события OnLoad
+Sub window_OnLoad
+  Set objDocument = self.Document
+  'Устанавливаем размеры окна
+  self.ResizeTo 350,250
+  self.MoveTo 300,200
+  objDocument.all.rbComputerList("FromFile").checked = true
+End Sub   
+
+'-----------------------------------------------------------------
+' Запуск инвентаризации
+Sub Start
+Dim strPathTXT, WshShell, intRes
+  ' Запрещаем кнопку "Начать инвентаризацию"
+  objDocument.all.btnStart.Disabled = True
+  objDocument.all.Status.InnerHTML="Процесс запущен ..."
+
+  intRes = MsgBox ("Запустить процесс?",_
+           vbYesNo+vbQuestion,"Инвентаризация")
+  
+  If intRes = vbYes Then
+    If objDocument.all.rbComputerList("FromFile").checked Then
+      ' Создаем объект WshShell
+      Set WshShell = CreateObject("WScript.Shell")
+      ' Определяем полный путь к файлу computerlist.txt
+      strPathTXT = WshShell.CurrentDirectory & "\" & "computerlist.txt"
+      ' Заполняем объект Dictionary значениями из файла
+      FillComputerDictionaryFromFile(strPathTXT)
+    Else
+      ' Заполняем объект Dictionary именами компьютеров из домена
+      FillComputerDictionaryFromDomain()
+    End If
+    ' Начинаем инвентаризацию
+    Invent
+  Else
+    ' Разрешаем кнопку "Начать инвентаризацию"
+    objDocument.all.btnStart.Disabled = False
+    objDocument.all.Status.InnerHTML="Процесс не запущен"
+  End If  
+End Sub
+
+'-----------------------------------------------------------------
+' Процедура инвентаризации
+Sub Invent
+Dim intRes
+  On Error Resume Next
+  ' Присваиваем начальные значения переменным
+  strComputer = "."
+  strNamespace = "Root\CIMV2"
+  strSQLCommand = "CREATE TABLE INVENT ( " &_
+                " Station varchar (20),   " &_
+                " Data  varchar (20),  " &_
+                " OperSys varchar (100),  " &_
+                " Bios varchar (100),  " &_
+                " CPU varchar (100),  " &_
+                " Memory varchar (100), " &_
+                " HDD varchar(200) ,  " &_
+                " CDROM varchar(100) ,  " &_
+                " Video varchar (100),    " &_
+                " Sound varchar (100),   " &_
+                " Ports varchar (100),      " &_
+                " NetCard varchar (200),      " &_
+                " Keyboard varchar (100),      " &_
+                " Mouse varchar (100)       " &_
+                " ) "
+
+  ' Создаем объект ADODB.Connection
+  Set objConnect = CreateObject("ADODB.Connection")
+  ' Создаем объект ADODB.Recordset
+  Set objRecordset = CreateObject("ADODB.Recordset")
+  ' Устанавливаем соединение с источником данных
+  objConnect.Open "DSN=Invent;"
+  ' Создаем новую таблицу для хранения записей
+  objConnect.Execute strSQLCommand,,adExecuteNoRecords
+
+  ' Обрабатываем ошибки
+  If Err.Number = 0 Then
+    ' Выводим сообщение об создании таблицы
+    MsgBox "Создана таблица INVENT "
+  End If
+  ' Очищаем объект Err
+  Err.Clear
+
+  ' Устанавливаем свойство курсора базы данных 
+  objRecordset.CursorLocation = adUseClient
+  ' Открываем набор данных
+  objRecordset.Open "SELECT * FROM INVENT" , objConnect, _
+                             adOpenStatic, adLockOptimistic
+
+  ' Перебираем в цикле все элементы объекта Dictionary
+  For Each objItem In objDictionary
+    ' Очищаем объект Err
+    Err.Clear
+
+    ' Получаем имя компьютера из текущего элемента объекта Dictionary
+    strComputer = objDictionary.Item(objItem)
+    ' Подключаемся к пространству имен WMI
+    Set objService = GetObject("WinMgmts:\\" &_
+                          strComputer & "\" & strNamespace)
+    ' Обрабатываем ошибки
+    If Err.Number <> 0 then
+      ' Добавляем новую запись
+      objRecordset.AddNew
+      ' Заполняем поля
+      objRecordset("Station")  = strComputer
+      objRecordset("Data")     = Date & "  " & Time
+      objRecordset("OperSys")  = "Ошибка при подключении к " &_
+                                 " пространству имен WMI"
+      ' Сохраняем запись
+      objRecordset.Update
+    Else
+      ' Добавляем новую запись
+      objRecordset.AddNew
+      ' Заполняем поля
+      objRecordset("Station")  = GetStationName()
+      objRecordset("Data")     = Date & "  " & Time
+      objRecordset("OperSys")  = GetOperSysInfo()
+      objRecordset("Bios")     = GetBiosInfo()
+      objRecordset("CPU")      = GetCpuInfo()
+      objRecordset("Memory")   = GetMemoryInfo()
+      objRecordset("HDD")      = GetHDDInfo()
+      objRecordset("CDROM")    = GetCDROMInfo()
+      objRecordset("Video")    = GetVideoInfo()
+      objRecordset("Sound")    = GetSoundInfo()
+      objRecordset("Ports")    = GetPortsInfo()
+      objRecordset("NetCard")  = GetNetCardInfo()
+      objRecordset("Keyboard") = GetKeyboard()
+      objRecordset("Mouse")    = GetMouseInfo()
+      ' Сохраняем запись
+      objRecordset.Update
+    End If
+  Next
+
+  ' Удаляем объект ADODB.Recordset
+  objRecordset.Close
+  ' Удаляем объект ADODB.Connection
+  objConnect.Close
+  intRes = MsgBox ("Процесс завершен",_
+           vbOkOnly+vbInformation,"Инвентаризация")
+  ' Разрешаем кнопку "Начать инвентаризацию"
+  objDocument.all.btnStart.Disabled = False
+  objDocument.all.Status.InnerHTML="Процесс не запущен"
+End Sub
+
+'-----------------------------------------------------------------
+' Процедура для заполнения объекта Dictionary из домена
+Sub FillComputerDictionaryFromDomain()
+' Объявляем переменные
+Dim objDomain, objComputer, i
+  ' Создаем объект Dictionary
+  Set objDictionary = CreateObject("Scripting.Dictionary")
+ 
+  'Связываемся с объектом Domain
+  Set objDomain = GetObject("WinNT://Domain1")
+  'Устанавливаем фильтр для выделения объектов-компьютеров
+  objDomain.Filter = Array("computer")
+ 
+  i = 0
+  ' Цикл для чтения строк из файла
+  For Each objComputer In objDomain
+    ' Добавляем элемент в объект Dictionary
+    objDictionary.Add i, objComputer.Name
+    i = i + 1
+  Next
+End Sub
+
+'-----------------------------------------------------------------
+' Процедура для заполнения объекта Dictionary из файла
+Sub FillComputerDictionaryFromFile(File)
+' Объявляем переменные
+Dim objFSO, objTextFile,i,s
+  ' Создаем объект Dictionary
+  Set objDictionary = CreateObject("Scripting.Dictionary")
+  ' Создаем объект FileSystemObject
+  Set objFSO = CreateObject("Scripting.FileSystemObject")
+  ' Открываем файл для чтения
+  Set objTextFile = objFSO.OpenTextFile(File, ForReading)
+  i = 0
+  ' Цикл для чтения строк из файла
+  Do Until objTextFile.AtEndOfStream
+    ' Читаем строку из файла
+    s = objTextFile.Readline
+    ' Добавляем элемент в объект Dictionary
+    objDictionary.Add i, s
+    i = i + 1
+  Loop
+End Sub
+
+'-----------------------------------------------------------------
+' Функция для конвертации даты формата WMI в строку
+Function WMIDateStr(WMIDate)
+    WMIDateStr = CDate(Mid(WMIDate, 5, 2) & "." & _
+         Mid(WMIDate, 7, 2)  & "." &_
+         Left(WMIDate, 4)    & " " &_
+         Mid(WMIDate, 9, 2)  & ":" & _
+         Mid(WMIDate, 11, 2) & ":" & _
+         Mid(WMIDate, 13, 2))
+End Function
+
+'-----------------------------------------------------------------
+' Функция для пребразования байт в Mб
+Function SizeFormat(iSize,strFormat)
+  ' Объявляем локальные переменные функции
+  Dim strRes
+  Dim Pos
+  
+  If strFormat = "Mb" Then
+    strRes = iSize/1024/1024
+  Else
+    If strFormat = "Kb" Then
+      strRes = iSize/1024
+    Else
+      If strFormat = "Gb" Then
+        strRes = iSize/1024/1024/1024
+      End IF
+    End IF
+  End IF
+  
+  Pos = Instr(1, strRes, ",")
+  If Pos > 0 Then
+    SizeFormat = Left(strRes,Pos-1)
+  Else
+    SizeFormat = strRes
+  End If
+End Function
+
+'-----------------------------------------------------------------
+' Функция для получения имени компьютера
+Function GetStationName()
+  strResult = ""
+  ' Создаем коллекцию экземпляров класса Win32_ComputerSystem
+  Set Col = objService.ExecQuery _
+                           ("SELECT * FROM Win32_ComputerSystem")
+  ' Перебираем элементы коллекции
+  For Each Obj In Col
+    ' Формируем строку для записи в базу данных
+    strResult = Obj.Name
+  Next
+ 
+  ' Возвращаем результат
+  GetStationName = strResult
+End Function
+
+'-----------------------------------------------------------------
+' Функция для получения информации об операционной системе,
+' установленной на компьютере
+Function GetOperSysInfo()
+  strResult = ""
+  ' Создаем коллекцию экземпляров класса Win32_OperatingSystem
+  Set Col = objService.ExecQuery _
+                           ("SELECT * FROM Win32_OperatingSystem")
+  ' Перебираем элементы коллекции
+  For Each Obj In Col
+    ' Формируем строку для записи в базу данных
+    strResult = strResult & Obj.Caption & ", " &_
+                WMIDateStr(Obj.InstallDate) & "; "
+  Next
+ 
+  ' Возвращаем результат
+  GetOperSysInfo = strResult
+End Function
+
+'-----------------------------------------------------------------
+' Функция для получения информации о Bios
+Function GetBiosInfo()
+  strResult = ""
+  ' Создаем коллекцию экземпляров класса Win32_Bios
+  Set Col = objService.ExecQuery _
+                           ("SELECT * FROM Win32_Bios")
+  ' Перебираем элементы коллекции
+  For Each Obj In Col
+    ' Формируем строку для записи в базу данных
+    strResult = strResult & Obj.Name & ", S/N:" &_
+                Obj.SerialNumber & "; "
+  Next
+  ' Возвращаем результат
+  GetBiosInfo = strResult
+End Function
+
+'-----------------------------------------------------------------
+' Функция для получения информации о процессоре
+Function GetCpuInfo()
+  strResult = ""
+  ' Создаем коллекцию экземпляров класса Win32_Processor
+  Set Col = objService.ExecQuery _
+                           ("SELECT * FROM Win32_Processor")
+  ' Перебираем элементы коллекции
+  For Each Obj In Col
+    ' Формируем строку для записи в базу данных
+    strResult = strResult & Obj.Name & ", " &_
+                Obj.MaxClockSpeed  & "МГц" & "; "
+  Next
+  ' Возвращаем результат
+  GetCpuInfo = strResult
+End Function
+
+'-----------------------------------------------------------------  
+' Функция для получения информации об оперативной памяти
+Function GetMemoryInfo()
+  strResult = ""
+  ' Создаем коллекцию экземпляров класса Win32_PhysicalMemory
+  Set Col = objService.ExecQuery _
+                             ("SELECT * FROM Win32_PhysicalMemory")
+  ' Перебираем элементы коллекции
+  For Each Obj In Col
+    ' Формируем строку для записи в базу данных
+    strResult = strResult & Obj.DeviceLocator & " : " &_
+                SizeFormat(Obj.Capacity,"Mb") & "Мб; "
+  Next
+  ' Возвращаем результат
+  GetMemoryInfo = strResult
+End Function
+
+'-----------------------------------------------------------------
+' Функция для получения информации о жестких дисках
+Function GetHDDInfo()
+  strResult = ""
+  ' Создаем коллекцию экземпляров класса Win32_DiskDrive
+  Set Col = objService.ExecQuery _
+                             ("SELECT * FROM Win32_DiskDrive")
+  ' Перебираем элементы коллекции
+  For Each Obj In Col
+    ' Формируем строку для записи в базу данных
+    strResult = strResult & "Диск " & Obj.Index & ": " & Obj.Model &_
+                ", "  & SizeFormat(Obj.Size,"Mb") & "Мб; "
+  Next
+  ' Возвращаем результат
+  GetHDDInfo = strResult
+End Function
+
+'-----------------------------------------------------------------
+' Функция для получения информации устройстве CD-ROM
+Function GetCDROMInfo()
+  strResult = ""
+  ' Создаем коллекцию экземпляров класса Win32_CDROMDrive
+  Set Col = objService.ExecQuery _
+                             ("SELECT * FROM Win32_CDROMDrive")
+  ' Перебираем элементы коллекции
+  For Each Obj In Col
+    ' Формируем строку для записи в базу данных
+    strResult = strResult & Obj.Name & "; "
+  Next
+  ' Возвращаем результат
+  GetCDROMInfo = strResult
+End Function
+
+'-----------------------------------------------------------------
+' Функция для получения информации от видеокарте компьютера
+Function GetVideoInfo()
+  strResult = ""
+  ' Создаем коллекцию экземпляров класса Win32_VideoController
+  Set Col = objService.ExecQuery _
+                             ("SELECT * FROM Win32_VideoController")
+  ' Перебираем элементы коллекции
+  For Each Obj In Col
+    ' Формируем строку для записи в базу данных
+    strResult = strResult & Obj.Name & ",  Adapter RAM = " &_
+                SizeFormat(Obj.AdapterRAM,"Mb") &  "Мб, "  &_
+                Obj.CurrentHorizontalResolution & " x " &_
+                Obj.CurrentVerticalResolution &_
+                ", " & Obj.CurrentRefreshRate & "Гц" & "; "
+  Next
+  ' Возвращаем результат
+  GetVideoInfo = strResult
+End Function
+
+'-----------------------------------------------------------------
+' Функция для получения информации о звуковой карте компьютера
+Function GetSoundInfo()
+  strResult = ""
+  ' Создаем коллекцию экземпляров класса Win32_SoundDevice
+  Set Col = objService.ExecQuery _
+                             ("SELECT * FROM Win32_SoundDevice")
+  ' Перебираем элементы коллекции
+  For Each Obj In Col
+    ' Формируем строку для записи в базу данных
+    strResult = strResult & Obj.Name & ", " & Obj.Manufacturer & ";"
+  Next
+  ' Возвращаем результат
+  GetSoundInfo = strResult
+End Function
+
+'-----------------------------------------------------------------
+' Функция для получения информации о портах компьютера
+Function GetPortsInfo()
+  strResult = ""
+  ' Создаем коллекцию экземпляров класса Win32_ParallelPort
+  Set Col = objService.ExecQuery _
+                             ("SELECT * FROM Win32_ParallelPort")
+  ' Перебираем элементы коллекции
+  For Each Obj In Col
+    ' Формируем строку для записи в базу данных
+    strResult = strResult & Obj.Name & "; "
+  Next
+ 
+  ' Создаем коллекцию экземпляров класса Win32_SerialPort
+  Set Col = objService.ExecQuery _
+                             ("SELECT * FROM Win32_SerialPort")
+  ' Перебираем элементы коллекции
+  For Each Obj In Col
+    ' Формируем строку для записи в базу данных
+    strResult = strResult & Obj.DeviceID & "; "
+  Next
+  ' Возвращаем результат
+  GetPortsInfo = strResult
+End Function
+
+'-----------------------------------------------------------------
+' Функция для получения информации о сетевой карте компьютера
+Function GetNetCardInfo()
+  ' Объявляем локальные переменные функции
+  Dim colNetworkAdapters
+  Dim objNetworkAdapter
+  Dim colPnPDevices
+  Dim objPnpDevice
+  Dim colDeviceBuses
+  Dim objDeviceBus
+  Dim colNetworkAdapterSettings
+  Dim objNetworkAdapterSetting
+ 
+  strResult = ""
+ 
+  ' Создаем коллекцию экземпляров класса Win32_NetworkAdapter
+  Set colNetworkAdapters = objService.ExecQuery _
+                          ("SELECT * FROM Win32_NetworkAdapter")
+  ' Перебираем элементы коллекции colNetworkAdapters
+  For Each objNetworkAdapter in colNetworkAdapters
+    ' Создаем коллекцию экземпляров
+    Set colPnPDevices = objService.ExecQuery _
+        ("ASSOCIATORS OF {Win32_NetworkAdapter.DeviceID='" &_
+                         objNetworkAdapter.DeviceID & "'} " &_
+         " WHERE AssocClass=Win32_PnPDevice")
+    ' Перебираем элементы коллекции colPnPDevices
+    For Each objPnpDevice in colPnPDevices
+      ' Создаем коллекцию экземпляров colDeviceBuses
+      Set colDeviceBuses = objService.ExecQuery _
+        ("ASSOCIATORS OF {Win32_PnPEntity.DeviceID='" &_
+         objPnpDevice.DeviceID & "'} " &_
+         " WHERE AssocClass=Win32_DeviceBus")
+      ' Перебираем элементы коллекции colDeviceBuses   
+      For Each objDeviceBus in colDeviceBuses
+        ' Формируем строку для записи в базу данных
+        strResult = strResult & objNetworkAdapter.Name
+        strResult = strResult & ", MAC = " &_
+                    objNetworkAdapter.MACAddress
+        ' Создаем коллекцию экземпляров             
+        Set colNetworkAdapterSettings = objService.ExecQuery _
+         ("ASSOCIATORS OF {Win32_NetworkAdapter.DeviceID='" &_
+          objNetworkAdapter.DeviceID & "'} " &_
+          " WHERE AssocClass = Win32_NetworkAdapterSetting")
+        ' Перебираем элементы коллекции
+        For Each objNetworkAdapterSetting in colNetworkAdapterSettings
+           ' Формируем строку для записи в базу данных
+           strResult = strResult & ", IP = " & _
+                       objNetworkAdapterSetting.IPAddress(0)
+        Next
+      Next
+    Next
+  Next
+  ' Возвращаем результат
+  GetNetCardInfo = strResult
+End Function
+
+'-----------------------------------------------------------------
+' Функция для получения информации о клавиатуре компьютера
+Function GetKeyboard()
+  strResult = ""
+  ' Создаем коллекцию экземпляров класса Win32_Keyboard
+  Set Col = objService.ExecQuery _
+                             ("SELECT * FROM Win32_Keyboard")
+  ' Перебираем элементы коллекции
+  For Each Obj In Col
+    ' Формируем строку для записи в базу данных
+    strResult = strResult & Obj.Name & "; "
+  Next
+  ' Возвращаем результат
+  GetKeyboard = strResult
+End Function
+
+'-----------------------------------------------------------------
+' Функция для получения информации о мышке
+Function GetMouseInfo()
+  strResult = ""
+  ' Создаем коллекцию экземпляров класса Win32_PointingDevice
+  Set Col = objService.ExecQuery _
+                             ("SELECT * FROM Win32_PointingDevice")
+  ' Перебираем элементы коллекции
+  For Each Obj In Col
+    ' Формируем строку для записи в базу данных
+    strResult = strResult & Obj.HardwareType  & "; "
+  Next
+  ' Возвращаем результат
+  GetMouseInfo = strResult
+End Function
+
+</SCRIPT>
+
+</HEAD>
+<BODY BGCOLOR="silver">
+<FIELDSET>
+   <LEGEND>Список компьютеров</LEGEND>
+   <INPUT ID="FromFile" TYPE=radio NAME="rbComputerList" VALUE="File">
+   <LABEL FOR="FromFile">Файл Computerlist.txt</LABEL><BR>
+   <INPUT ID="FromDomain" TYPE=radio NAME="rbComputerList"      VALUE="Domain">
+   <LABEL FOR="FromDomain">Домен Domain1</LABEL><BR>
+</FIELDSET><BR>
+<INPUT TYPE="button" VALUE="Начать инвентаризацию" NAME="btnStart"    onClick="Start()">
+<BR><BR>
+<SPAN ID="Status">
+Процесс не запущен
+</SPAN>
+
+</BODY>
+</HTML>
