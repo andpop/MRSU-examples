@@ -1,0 +1,7 @@
+POST /?a=1&b=2 HTTP/1.1
+Host: localalhost
+Content-type: application/x-www-form-urlencoded
+Content-length: 7
+
+c=3&d=4
+
