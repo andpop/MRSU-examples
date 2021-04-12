@@ -5,3 +5,11 @@ Content-length: 7
 
 c=3&d=4
 
+------------------------------------------
+curl -v "localhost:3000?a=1&b=2"
+curl -v -X POST -d "c=3&d=4" "localhost:3000?a=1&b=2"
+curl -v -d "c=3&d=4" "localhost:3000?a=1&b=2"
+
+------------------------------------------
+
+Invoke-RestMethod -Method POST -Body "c=3&d=4" -Uri "http://localhost:3000?a=1&b=2"
