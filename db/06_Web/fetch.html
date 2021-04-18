@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <button id="get-button">Fetch (GET)</button>
+    <button id="post-button">Fetch (POST)</button>
+
+    <script>
+        const getBtn = document.getElementById('get-button');
+        const postBtn = document.getElementById('post-button');
+
+        getBtn.onclick = function (e) {
+            fetch('index.php?button=get')
+                .then((response) => {
+                    return response.text();
+                })
+                .then((data) => {
+                    console.log(data);
+                });
+        }
+
+        postBtn.addEventListener('click', function (e) {
+            fetch('index.php?button=post', {
+                method: 'POST',
+                body: 'name=Andrey'
+            })
+                .then((response) => {
+                    return response.text();
+                })
+                .then((data) => {
+                    console.log(data);
+                });
+        });
+    </script>
+</body>
+
+</html>
