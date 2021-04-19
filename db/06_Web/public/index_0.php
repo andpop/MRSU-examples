@@ -1,8 +1,5 @@
 <h2>Hello from index.php</h2>
 <?php
-chdir(dirname(__DIR__));
-require('src/hello.php');
-
 echo "<pre>";
 echo '------ $_Server -------' . PHP_EOL;
 print_r($_SERVER);
@@ -17,6 +14,3 @@ echo "----------------";
 echo date('Y-m-d');
 
 echo "</pre>";
-
-sayHello();
-
