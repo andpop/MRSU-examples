@@ -135,7 +135,7 @@ SELECT vendor_id, count(*) FROM `order` GROUP BY vendor_id HAVING count(*) > 1;
 SELECT vendor_id, order_date, MAX(summa) FROM `order` GROUP BY vendor_id, order_date;
 SELECT vendor_id, order_date, MAX(summa) FROM `order` GROUP BY vendor_id, order_date HAVING MAX(summa)>100;
 
--- Подзапросы для создания данных
+-- Подзапросы для создания данных --------------------------------------
 Определим группы по суммам продаж
 SELECT 'Мало' name, 0 low_sum, 100 high_sum
 UNION
@@ -172,4 +172,13 @@ FROM customer
         UNION
         SELECT 'Много' name, 500.01 low_sum, 100000 high_sum) sum_groups
       ON customer_orders.total BETWEEN sum_groups.low_sum AND sum_groups.high_sum;
+--------------------------------------------------------
 
+-- Подзапрос внутри ORDER BY
+SELECT c.name
+FROM customer c
+ORDER BY
+(SELECT count(*) FROM `order` ord
+    WHERE c.id=ord.customer_id) DESC;
+
+INSERT INTO `order` (summa, order_date, customer_id, vendor_id) VALUES (200.25, '2021-09-21', (SELECT id FROM customer WHERE name='Ли'), (SELECT id FROM vendor WHERE name='Петров'));
