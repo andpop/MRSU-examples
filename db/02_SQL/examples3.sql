@@ -56,3 +56,70 @@ lead(summa, 1) OVER () 'Следующая сумма' FROM `order`;
 -- Дублирование данных из таблицы `order` под новой датой
 insert into `order` (summa, order_date, customer_id, vendor_id) select summa, '2021-09-25', customer_id, vendor_id from `order`;
 
+--------------------------------------------------------------------
+-- UNION и UNION ALL
+SELECT 1,2
+UNION
+SELECT 1,2
+UNION
+SELECT 3,4;
+
+SELECT 1,2
+UNION ALL
+SELECT 1,2
+UNION ALL
+SELECT 3,4;
+
+---------------------------------------------------------------------
+-- Common table expressions
+
+-- Запрос с подзапросом
+SELECT * 
+FROM (SELECT 1);
+
+-- Запрос с CTE
+WITH one AS (SELECT 1)
+SELECT * FROM one;
+
+-- Можно указать имена столбцов в CTE
+WITH twoColumns(a,b) AS (SELECT 1, 2)
+SELECT * FROM twoColumns;
+
+
+WITH customer_saransk AS
+   (SELECT id, name
+    FROM customer 
+    WHERE city="Саранск"),
+order_saransk AS
+   (SELECT c.name, o.order_date, o.summa
+    FROM `order` o
+       INNER JOIN customer_saransk c
+       ON o.customer_id=c.id)
+SELECT name, order_date, summa
+FROM order_saransk
+ORDER BY name;
+
+
+WITH RECURSIVE infinite AS (
+   SELECT 1
+      UNION ALL
+   SELECT * FROM infinite)
+SELECT * FROM infinite;
+
+WITH RECURSIVE finite AS (
+   SELECT 1
+      UNION ALL
+   SELECT * FROM finite LIMIT 2)
+SELECT * FROM finite;
+
+WITH RECURSIVE ten(x) AS (
+   SELECT 1
+      UNION ALL
+   SELECT x+1 FROM ten WHERE x<10)
+SELECT * FROM ten;
+
+WITH RECURSIVE dates(x) AS (
+   SELECT '2021-01-01'
+      UNION ALL
+   SELECT DATE(x, '+1 day') FROM dates WHERE x<'2021-12-31')
+SELECT * FROM dates;
