@@ -1,3 +1,4 @@
+========== Условная логика ==================
 -- Подзапрос внутри THEN ...
 SELECT v.name,
    CASE
@@ -20,7 +21,8 @@ FROM vendor v
    ON v.id=o.vendor_id
 GROUP BY v.name;
 
--- 14. Window functions
+=========== Аналитические функции ==============
+
 SELECT *, ROW_NUMBER() OVER () AS number FROM customer;
 
 -- Функции ранжирования
@@ -56,6 +58,7 @@ lead(summa, 1) OVER () 'Следующая сумма' FROM `order`;
 -- Дублирование данных из таблицы `order` под новой датой
 insert into `order` (summa, order_date, customer_id, vendor_id) select summa, '2021-09-25', customer_id, vendor_id from `order`;
 
+===== Объединение результатов запросов ===========================
 --------------------------------------------------------------------
 -- UNION и UNION ALL
 SELECT 1,2
@@ -70,6 +73,15 @@ SELECT 1,2
 UNION ALL
 SELECT 3,4;
 
+======= Представления =========================
+CREATE VIEW orders_with_names
+AS SELECT `order`.order_date, customer.name AS customer_name, vendor.name AS vendor_name, `order`.summa
+FROM `order`, customer, vendor
+WHERE `order`.customer_id = customer.id AND `order`.vendor_id = vendor.id;
+
+SELECT * FROM orders_with_names;
+
+======= Обобщенные табличные выражения ==========
 ---------------------------------------------------------------------
 -- Common table expressions
 
