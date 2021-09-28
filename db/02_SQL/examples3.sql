@@ -1,13 +1,21 @@
 ========== Условная логика ==================
 -- Подзапрос внутри THEN ...
-SELECT v.name,
+SELECT id, name 'Покупатель',
+   CASE
+      WHEN rating>=300 THEN 'Молодец'
+      WHEN rating>=200 THEN 'Неплохо'
+      ELSE 'Старайся'
+   END 'Рейтинг'
+FROM customer;
+
+SELECT v.name 'Продавец',
    CASE
       WHEN v.city='Саранск' THEN
          (SELECT count(*) from `order` o
           WHERE v.id=o.vendor_id)
       ELSE
          'Не из Саранска'
-   END sales
+   END 'Земляк'
 FROM vendor v;
 
 -- Защита от деления на ноль
@@ -27,8 +35,11 @@ SELECT *, ROW_NUMBER() OVER () AS number FROM customer;
 
 -- Функции ранжирования
 SELECT *, ROW_NUMBER() OVER (ORDER BY rating DESC) AS rating_place FROM customer ORDER BY name;
+
 SELECT *, RANK() OVER (ORDER BY rating DESC) AS rank FROM customer ORDER BY name;
+
 SELECT *, DENSE_RANK() OVER (ORDER BY rating DESC) AS rank FROM customer ORDER BY name;
+
 SELECT id, name, rating, ROW_NUMBER() OVER (ORDER BY rating DESC) AS row_number,
 RANK() OVER (ORDER BY rating DESC) AS rank, DENSE_RANK() OVER (ORDER BY rating DESC) AS dense_rank FROM customer ORDER BY name;
 
@@ -51,12 +62,12 @@ SELECT *, COUNT(*) OVER (PARTITION BY city) AS customers_in_city FROM customer;
 SELECT *, sum(summa) OVER (ROWS UNBOUNDED PRECEDING) 'Нарастающий итог' FROM `order`;
 
 
-SELECT id, summa, lag(summa, 1) OVER () 'Предыдущая сумма',
+SELECT id, summa, lag(summa, 2) OVER () 'Предыдущая сумма',
 lead(summa, 1) OVER () 'Следующая сумма' FROM `order`;
 
 --------------------------------------------------------------------
 -- Дублирование данных из таблицы `order` под новой датой
-insert into `order` (summa, order_date, customer_id, vendor_id) select summa, '2021-09-25', customer_id, vendor_id from `order`;
+insert into `order` (summa, order_date, customer_id, vendor_id) select summa, '2021-09-28', customer_id, vendor_id from `order` where order_date='2016-12-10';
 
 ===== Объединение результатов запросов ===========================
 --------------------------------------------------------------------
