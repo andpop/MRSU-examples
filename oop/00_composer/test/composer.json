@@ -1,0 +1,21 @@
+{
+    "name": "andrv/test",
+    "autoload": {
+        "psr-4": {
+            "Andrv\\Test\\": "src/"
+        },
+        "files": ["src/2.php"]
+    },
+    "authors": [
+        {
+            "name": "Andrey Popov",
+            "email": "andpop@mail.ru"
+        }
+    ],
+    "require": {
+        "wp-cli/php-cli-tools": "^0.11.13"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.6"
+    }
+}
