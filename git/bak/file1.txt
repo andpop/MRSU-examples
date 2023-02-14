@@ -1,0 +1,7 @@
+The first string.
+The second string.
+The third string with error.
+
+My name is Vasya.
+
+GoodBye!!!

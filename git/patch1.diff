@@ -1,0 +1,17 @@
+--- file1.txt	2023-02-14 23:33:19.650886744 +0300
++++ file2.txt	2023-02-14 23:32:01.226879769 +0300
+@@ -1,7 +1,10 @@
+-The first string.
+-The second string.
+-The third string with error.
++This is new string.
+ 
+-My name is Vasya.
++The first string.
++The second string and new word.
++The third string.
+ 
++His name is Vasya.
++Hello!
+ GoodBye!!!
++

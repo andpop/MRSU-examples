@@ -1,0 +1,10 @@
+This is new string.
+
+The first string.
+The second string and new word.
+The third string.
+
+His name is Vasya.
+Hello!
+GoodBye!!!
+
