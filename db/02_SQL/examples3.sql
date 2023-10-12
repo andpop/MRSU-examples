@@ -20,14 +20,23 @@ FROM vendor v;
 
 -- Защита от деления на ноль
 SELECT v.name 'Продавец', sum(o.summa) 'Сумма', count(o.summa) 'Количество',
-   sum(o.summa) /
-   CASE WHEN count(o.summa) = 0 THEN 1
-       ELSE count(o.summa)
+   CASE WHEN count(o.summa) = 0 THEN 0
+       ELSE sum(o.summa) / count(o.summa)
    END 'Средний чек'
 FROM vendor v
    LEFT OUTER JOIN `order` o
    ON v.id=o.vendor_id
 GROUP BY v.name;
+
+/* SELECT v.name 'Продавец', sum(o.summa) 'Сумма', count(o.summa) 'Количество', */
+/*    sum(o.summa) / */
+/*    CASE WHEN count(o.summa) = 0 THEN 1 */
+/*        ELSE count(o.summa) */
+/*    END 'Средний чек' */
+/* FROM vendor v */
+/*    LEFT OUTER JOIN `order` o */
+/*    ON v.id=o.vendor_id */
+/* GROUP BY v.name; */
 
 =========== Аналитические функции ==============
 
@@ -96,6 +105,7 @@ SELECT * FROM orders_with_names;
 ---------------------------------------------------------------------
 -- Common table expressions
 
+
 -- Запрос с подзапросом
 SELECT * 
 FROM (SELECT 1);
@@ -122,7 +132,46 @@ SELECT *
 FROM order_saransk
 ORDER BY name;
 
+-- Вывести статистику по заказам покупателей (количество и сумма) с отнесением к одной из трех категорий по сумме покупок
 
+SELECT customer.name name, num_orders, total, sum_groups.name
+FROM customer
+   INNER JOIN 
+        (SELECT customer_id, count(*) num_orders, sum(summa) total
+        FROM `order`
+        GROUP BY customer_id) customer_orders
+      ON customer.id=customer_orders.customer_id
+   INNER JOIN
+        (SELECT 'Мало' name, 0 low_sum, 100 high_sum
+        UNION
+        SELECT 'Средне' name, 100.01 low_sum, 500 high_sum
+        UNION
+        SELECT 'Много' name, 500.01 low_sum, 100000 high_sum) sum_groups
+      ON customer_orders.total BETWEEN sum_groups.low_sum AND sum_groups.high_sum;
+
+-- Перепишем через CTE
+WITH customer_orders AS (
+    SELECT customer_id, count(*) num_orders, sum(summa) total
+        FROM `order`
+        GROUP BY customer_id),
+    sum_groups AS (
+    SELECT 'Мало' name, 0 low_sum, 100 high_sum
+            UNION
+            SELECT 'Средне' name, 100.01 low_sum, 500 high_sum
+            UNION
+            SELECT 'Много' name, 500.01 low_sum, 100000 high_sum)
+SELECT customer.name name, num_orders, total, sum_groups.name
+FROM customer
+   INNER JOIN 
+        customer_orders
+      ON customer.id=customer_orders.customer_id
+   INNER JOIN
+        sum_groups
+      ON customer_orders.total BETWEEN sum_groups.low_sum AND sum_groups.high_sum;
+
+
+
+-- Recursive CTE
 WITH RECURSIVE infinite AS (
    SELECT 1
       UNION ALL
