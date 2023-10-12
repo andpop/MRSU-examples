@@ -228,14 +228,15 @@ SELECT 70 num UNION
 SELECT 80 num UNION
 SELECT 90 num) tens
 CROSS JOIN
-(SELECT 100 num UNION
+(SELECT 0 num UNION
+SELECT 100 num UNION
 SELECT 200 num UNION
 SELECT 300 num) hundreds
 WHERE dt < '2022-01-01'
 ORDER BY 1;
 ------------------------------------------
 WITH RECURSIVE ten(x, y) AS (
-   SELECT 1, 1
+   SELECT 0, 1
       UNION ALL
    SELECT x+1, y*2 FROM ten WHERE x<10)
 SELECT * FROM ten;
@@ -246,3 +247,33 @@ WITH temp (n, fact) AS
  SELECT n+1, (n+1)*fact FROM temp WHERE n < 9)
 SELECT * FROM temp;
 
+-------------------------------------------
+CREATE TABLE employee (
+   id INT PRIMARY KEY,
+   name TEXT NOT NULL,
+   manager_id INT REFERENCES employee(id)
+)
+
+INSERT INTO employee (id, name, manager_id) VALUES (1, 'Начальник 1 отдела', NULL);
+INSERT INTO employee (id, name, manager_id) VALUES (2, 'Начальник сектора 1 в 1 отделе', 1);
+INSERT INTO employee (id, name, manager_id) VALUES (3, 'Сотрудник1 в 1 отделе', 1);
+INSERT INTO employee (id, name, manager_id) VALUES (4, 'Начальник 2 отдела', NULL);
+INSERT INTO employee (id, name, manager_id) VALUES (5, 'Сотрудник1 в 1 секторе 1 отдела', 2);
+INSERT INTO employee (id, name, manager_id) VALUES (6, 'Сотрудник2 в 1 секторе 1 отдела', 2);
+INSERT INTO employee (id, name, manager_id) VALUES (7, 'Сотрудник1 во 2 отделе', 4);
+INSERT INTO employee (id, name, manager_id) VALUES (8, 'Сотрудник2 в 1 отделе', 1);
+INSERT INTO employee (id, name, manager_id) VALUES (9, 'Сотрудник2 во 2 отделе', 4);
+
+-- Найдем всех сотрудников из 1 отдела (находятся в иерархической зависимости от начальника первого отдела
+WITH RECURSIVE cte_employee (id, name, manager_id) AS (
+    SELECT e.id, e.name, e.manager_id
+    FROM employee e
+    WHERE e.id = 1
+
+    UNION ALL
+
+    SELECT e.id, e.name, e.manager_id
+    FROM employee e
+    JOIN cte_employee c ON c.id = e.manager_id
+)
+SELECT * FROM cte_employee;

@@ -47,11 +47,11 @@ class Squares implements Iterator
 
 $sequence = new Squares(1, 5);
 
-$sequence->rewind();
-echo $sequence->current();
-$sequence->next();
-echo $sequence->current();
+/* $sequence->rewind(); */
+/* echo $sequence->current(); */
+/* $sequence->next(); */
+/* echo $sequence->current(); */
 
-/* foreach ($sequence as $key => $value) { */
-/*     echo "===== $key: $value ======" . PHP_EOL; */
-/* } */
+foreach ($sequence as $key => $value) {
+    echo "===== $key: $value ======" . PHP_EOL;
+}
