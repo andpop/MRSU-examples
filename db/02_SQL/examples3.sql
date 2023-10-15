@@ -43,7 +43,15 @@ GROUP BY v.name;
 SELECT *, ROW_NUMBER() OVER () AS number FROM customer;
 
 -- Функции ранжирования
-SELECT *, ROW_NUMBER() OVER (ORDER BY rating DESC) AS rating_place FROM customer ORDER BY name;
+
+SELECT *, ROW_NUMBER() OVER w AS rating_place
+FROM customer
+WINDOW w AS (ORDER BY rating DESC)
+ORDER BY name;
+
+SELECT *, ROW_NUMBER() OVER (ORDER BY rating DESC) AS rating_place 
+FROM customer 
+ORDER BY name;
 
 SELECT *, RANK() OVER (ORDER BY rating DESC) AS rank FROM customer ORDER BY name;
 
@@ -277,3 +285,6 @@ WITH RECURSIVE cte_employee (id, name, manager_id) AS (
     JOIN cte_employee c ON c.id = e.manager_id
 )
 SELECT * FROM cte_employee;
+
+---------------------------------------------------
+
