@@ -25,9 +25,17 @@ select kladr_id, city from city where region = 'Мордовия';
 -- Убрать кавычки при выводе
 .mode list
 
--- Выгрузка в JSON
-.mode json
-
 -- Другие форматы выгрузки
 .mode markdown
 .mode html
+
+-- Выгрузка в JSON
+.mode json
+.once mordovia.json
+select postal_code, region_type, region, city from city where region='Мордовия';
+
+
+-- Выборка из JSON
+.mode box
+select json_extract(value, '$.region') as region, json_extract(value, '$.city') as city
+from json_each(readfile('mordovia.json'));
