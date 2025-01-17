@@ -1,9 +1,9 @@
 <?php
 
-var_dump(0 == "0"); // true
-echo 0 == '0.0'; // true
-echo 0.0 == '0'; // true
-echo 0 == 'one'; // false
-echo 0 == ' 1'; // false
-echo 42 == ' 42 '; // true
-echo 42 == '42Ь'; // false
+/* var_dump(0 == "0"); // true */
+/* var_dump(0 == '0.0'); // true */
+/* var_dump(0.0 == '0'); // true */
+/* var_dump(0 == 'one'); // false */
+/* var_dump(0 == ' 1'); // false */
+/* var_dump(42 == ' 42 '); // true */
+var_dump(42 == '42Ь'); // false
