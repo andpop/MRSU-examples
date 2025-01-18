@@ -6,6 +6,8 @@ echo f('Сергей');
 // Здесь будет ошибка
 $f2();
 
+// ========================================================
+
 function f(string $name): string
 {
     return "Hello from function, ${name}\n";

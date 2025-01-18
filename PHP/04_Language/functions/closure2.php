@@ -1,18 +1,33 @@
 <?php
 
-$message = 'привет';
+function outer()
+{
+    echo "Hello from outer\n";
 
-// Без конструкции use
-$example = function () {
-    var_dump($message);
-};
-$example();
+    function inner()
+    {
+        echo "Hello from inner\n";
+    }
 
-// Наследуем переменную $message
-$example = function () use ($message) {
-    var_dump($message);
-};
-$example();
+    inner();
+}
 
-$example = fn() => var_dump($message);
-$example();
+outer();
+inner(); // Функция inner попала в глобальную область видимости
+
+outer(); // Будет ошибка - функция inner уже определена
+
+//-------------------------------------------------------------
+// Вложенная функция как замыкание
+function outerFunction() {
+    $innerFunction = function() {
+        echo "Я замкнутая функция.";
+    };
+
+    $innerFunction(); // Вызываем замкнутую функцию внутри внешней
+}
+
+outerFunction();
+outerFunction(); // Функцию outer можно вызвать несколько раз
+
+$innerFunction(); // Ошибка: Функция не определена

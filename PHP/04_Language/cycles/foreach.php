@@ -14,3 +14,10 @@ $fruits = ["apple" => "яблоко", "banana" => "банан", "orange" => "а�
 foreach ($fruits as $key => $value) {
     echo "Ключ: $key, Значение: $value\n";
 }
+
+
+// -------------------------------------------------------
+foreach ($numbers as $index => $number) {
+    echo "$index : $number \n";
+}
+
