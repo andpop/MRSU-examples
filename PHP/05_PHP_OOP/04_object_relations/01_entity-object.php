@@ -2,13 +2,13 @@
 
 class User
 {
-    public function __construct($id, $name)
+    public function __construct(int $id, string $name)
     {
         $this->id = $id;
         $this->name = $name;
     }
 
-    public function equals($user)
+    public function equals(User $user): bool
     {
         return $this->id === $user->id;
     }

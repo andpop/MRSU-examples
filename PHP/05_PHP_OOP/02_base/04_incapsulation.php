@@ -3,31 +3,31 @@ namespace Popov\Lection2\Ex4;
 
 class Student
 {
-    private $name;
-    private $lastName;
+    private string $name;
+    private string $lastName;
 
-    public function __construct($name, $lastName)
+    public function __construct(string $name, string $lastName)
     {
         $this->name = $name;
         $this->lastName = $lastName;
     }
 
-    private function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getLastName()
+    public function getLastName(): string
     {
         return $this->lastName;
     }
 
-    public function setLastName($lastName)
+    public function setLastName(string $lastName)
     {
         $this->lastName = $lastName;
     }
