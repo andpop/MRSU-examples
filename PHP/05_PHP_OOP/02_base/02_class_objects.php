@@ -1,12 +1,10 @@
 <?php
-namespace Popov\Lection2\Ex2;
-
 class Student
 {
     public string $name;
     public string $lastName;
 
-    function getFullName()
+    function showFullName()
     {
         echo "Полное имя: ".$this->name." ".$this->lastName.PHP_EOL;
     }
@@ -18,19 +16,19 @@ $student1 = new Student;
 
 $student1->name = "Сергей";
 $student1->lastName = "Иванов";
-$student1->getFullName();
+$student1->showFullName();
 
 $student2 = new Student();
 $student2->name = "Мария";
 $student2->lastName = "Петрова";
-$student2->getFullName();
+$student2->showFullName();
 
 
 // ========== Compare objects ==========================
 
 $student2->name = "Сергей";
 $student2->lastName = "Иванов";
-$student2->getFullName();
+$student2->showFullName();
 
 // identity operator ===
 echo json_encode($student1 === $student2) . PHP_EOL; //false

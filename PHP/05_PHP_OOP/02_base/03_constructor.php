@@ -1,6 +1,4 @@
 <?php
-namespace Popov\Lection2\Ex3;
-
 class Student
 {
     public string $name;
@@ -13,14 +11,14 @@ class Student
         $this->lastName = $lastName;
     }
 
-    public function getFullName()
+    public function showFullName()
     {
         echo "Полное имя: ".$this->name." ".$this->lastName.PHP_EOL;
     }
 }
 
 $student1 = new Student("Сергей", "Иванов");
-$student1->getFullName();
+$student1->showFullName();
 
 $student2 = new Student("Мария", "Петрова");
-$student2->getFullName();
+$student2->showFullName();

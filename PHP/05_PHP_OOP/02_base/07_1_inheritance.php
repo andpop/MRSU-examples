@@ -1,14 +1,12 @@
 <?php
-namespace Popov\Lection2\Ex7;
-
 class Car
 {
-    private $manufacturer;
-    private $model;
-    private $color;
-    private $year;
+    private string $manufacturer;
+    private string $model;
+    private string $color;
+    private int $year;
 
-    public function __construct($manufacturer, $model, $color, $year = 2019)
+    public function __construct(string $manufacturer, string $model, string $color, int $year = 2019)
     {
         $this->manufacturer = $manufacturer;
         $this->model = $model;
@@ -25,9 +23,9 @@ class Car
 
 class PassengerCar extends Car
 {
-    private $numberPassenger;
+    private int $numberPassenger;
 
-    public function setNumberPassenger($numberPassenger)
+    public function setNumberPassenger(int $numberPassenger)
     {
         $this->numberPassenger = $numberPassenger;
     }

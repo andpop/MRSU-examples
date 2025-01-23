@@ -32,7 +32,7 @@ class Student
         $this->lastName = $lastName;
     }
 
-    public function getFullName()
+    public function showFullName()
     {
         echo "Полное имя: ".$this->name." ".$this->lastName.PHP_EOL;
     }
@@ -44,9 +44,9 @@ $student1 = new Student("Сергей", "Иванов");
 echo $student1->getName().PHP_EOL;
 //echo $student1->name;
 
-$student1->getFullName();
+$student1->showFullName();
 $student1->setName("Николай");
-$student1->getFullName();
+$student1->showFullName();
 
 //
 ////echo $student1->name;

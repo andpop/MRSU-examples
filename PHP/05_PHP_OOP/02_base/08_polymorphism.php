@@ -1,6 +1,4 @@
 <?php
-namespace Popov\Lection2\Ex8;
-
 abstract class Animal
 {
     abstract public function speak();
