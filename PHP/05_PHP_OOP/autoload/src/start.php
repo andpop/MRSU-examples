@@ -6,4 +6,5 @@ require_once('../vendor/autoload.php');
 $a = new A();
 $b = new B();
 
-$a.hello();
+$a->hello();
+$b->bye();

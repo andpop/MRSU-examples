@@ -3,8 +3,12 @@ namespace Andrey\ExampleApp;
 
 class B extends A
 {
+    
     public function bye()
     {
-        echo 'Bye from B';
+        $c = new C();
+        $c->hello();
+
+        echo 'Bye from B'.PHP_EOL;
     }
 }

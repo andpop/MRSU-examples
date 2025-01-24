@@ -1,7 +1,5 @@
 <?php
 
-namespace Popov\Lection3\Ex6;
-
 interface VeganEat
 {
 }

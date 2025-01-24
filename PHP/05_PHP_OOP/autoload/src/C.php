@@ -1,13 +1,11 @@
 <?php
 namespace Andrey\ExampleApp;
 
-class A
+class C
 {
-    public int $prop1;
-
     public function hello()
     {
-        echo 'Hello from A';
+        echo 'Hello from C'.PHP_EOL;
     }
 }
 

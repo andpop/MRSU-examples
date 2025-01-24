@@ -1,7 +1,6 @@
 <?php
 
 namespace My1
-
 {
 //    echo __NAMESPACE__ . PHP_EOL;
 
@@ -18,7 +17,6 @@ namespace My1
 }
 
 namespace MyBase\My2
-
 {
 //    echo __NAMESPACE__ . PHP_EOL;
     use \My1\MyClass as My1MyClass;

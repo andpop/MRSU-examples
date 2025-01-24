@@ -1,7 +1,5 @@
 <?php
 
-namespace Popov\Lection3\Ex5;
-
 abstract class Food
 {
     public $description;
