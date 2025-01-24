@@ -1,7 +1,9 @@
 <?php
+namespace Andrey\ExampleApp;
+
 class A
 {
-    public prop1;
+    public int $prop1;
 
     public function hello()
     {
