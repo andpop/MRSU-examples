@@ -1,0 +1,15 @@
+{
+    "name": "andrey/example_app",
+    "autoload": {
+        "psr-4": {
+            "Andrey\\ExampleApp\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Andrey Popov",
+            "email": "andpop@mail.ru"
+        }
+    ],
+    "require": {}
+}
