@@ -1,6 +1,4 @@
 <?php
-namespace Popov\Lection2\Ex8;
-
 class Car
 {
     private $acceptableColors = ["белый", "черный", "красный"];
@@ -32,7 +30,7 @@ $car1 = new Car;
 $car1->displayColor();
 try {
     $car1->paint("красный");
-} catch (\Exception $e) {
+} catch (Exception $e) {
     echo $e->getMessage().PHP_EOL;
 }
 
