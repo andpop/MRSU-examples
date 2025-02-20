@@ -28,7 +28,7 @@ function sum(...$numbers)
     return array_sum($numbers);
 }
 
-// Задание типов аргуменитов и возвращаемого значения
+// Задание типов аргументов и возвращаемого значения
 function addNumbers(float $a, float $b): float
 {
     return $a + $b;
