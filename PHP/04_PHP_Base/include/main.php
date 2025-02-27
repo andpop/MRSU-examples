@@ -8,7 +8,7 @@ echo "Hello from main.php\n";
 
 require_once("include.php");
 
-/* f();   // Ok */
+f();   // Ok
 
-/* echo "Bye from main.php\n"; */
+echo "Bye from main.php\n";
 
