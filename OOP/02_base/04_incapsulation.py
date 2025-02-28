@@ -26,8 +26,8 @@ print(student1.get_name())
 student1.set_name('Петр')
 print(student1.get_name())
 
-# print(student1.__name)
+print(student1.__name)
 # print(student1._Student__name)
 
-print(dir(student1))
+# print(dir(student1))
 

@@ -17,7 +17,7 @@ class Point
         echo "key = $key\n";
 
         if ($key == 'x') {
-            echo "Хрен тебе, а не x\n";
+            echo "Значение x нельзя прочитать\n";
             return null;
         } else {
             return $this->$key;
