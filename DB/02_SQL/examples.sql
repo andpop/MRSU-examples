@@ -4,14 +4,14 @@ USE test_db;
 
 -- 2. Create tables
 ----- SQLite ---------------------
-CREATE TABLE `vendor` (
+CREATE TABLE `vendors` (
   `id` INTEGER PRIMARY KEY,
   `name` VARCHAR(30) NOT NULL,
   `city` VARCHAR(30) NOT NULL,
   `percent` INTEGER NOT NULL CHECK (`percent`>0)
 );
 
-CREATE TABLE `customer` (
+CREATE TABLE `customers` (
   `id` INTEGER PRIMARY KEY,
   `name` VARCHAR(30) NOT NULL,
   `city` VARCHAR(30) NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE `customer` (
   `vendor_id` INT(6) NULL
 );
 
-CREATE TABLE `order` (
+CREATE TABLE `orders` (
   `id` INTEGER PRIMARY KEY,
   `summa` NUMERIC NOT NULL,
   `order_date` DATE NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE `order` (
 
 ----- MySQL  ---------------------
 
-CREATE TABLE `vendor` (
+CREATE TABLE `vendors` (
   `id` int(6) NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `name` varchar(30) NOT NULL,
   `city` varchar(30) NOT NULL,
@@ -38,24 +38,24 @@ CREATE TABLE `vendor` (
 ) DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE `customer` (
+CREATE TABLE `customers` (
   `id` int(6) NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `name` varchar(30) NOT NULL,
   `city` varchar(30) NOT NULL,
   `rating` int(3) NOT NULL CHECK (`rating`>0),
   `vendor_id` int(6) NULL
-) DEFAULT CHARSCREATE TABLE `customer` (
+) DEFAULT CHARSCREATE TABLE `customers` (
   `id` INTEGER PRIMARY KEY,
   `name` VARCHAR(30) NOT NULL,
   `city` VARCHAR(30) NOT NULL,
   `rating` INTEGER NOT NULL CHECK (`rating`>0),
   `vendor_id` INTEGER NULL,
-  FOREIGN KEY (`vendor_id`) REFERENCES `vendor` (`id`) 
+  FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`) 
   ON DELETE SET NULL
 );
 SET=utf8;
 
-CREATE TABLE `order` (
+CREATE TABLE `orders` (
   `id` int(6) NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `summa` float NOT NULL,
   `order_date` date NOT NULL,
@@ -65,20 +65,20 @@ CREATE TABLE `order` (
 
 
 -- 3. Insert rows
-INSERT INTO `vendor` (`id`, `name`, `city`, `percent`) VALUES
+INSERT INTO `vendors` (`id`, `name`, `city`, `percent`) VALUES
 (1001, 'Иванов', 'Саранск', 12),
 (1002, 'Петров', 'Москва', 13),
 (1003, 'Андреев', 'Кострома', 10),
 (1004, 'Сидоров', 'Саранск', 10);
 
-INSERT INTO `customer` (`id`, `name`, `city`, `rating`, `vendor_id`) VALUES
+INSERT INTO `customers` (`id`, `name`, `city`, `rating`, `vendor_id`) VALUES
 (2001, 'Потапов', 'Саранск', 100, 1001),
 (2002, 'Гарин', 'Владимир', 200, 1003),
 (2003, 'Ли', 'Москва', 200, 1002),
 (2004, 'Глухов', 'Самара', 300, 1002),
 (2005, 'Клюев', 'Саранск', 100, 1001);
 
-INSERT INTO `order` (`id`, `summa`, `order_date`, `customer_id`, `vendor_id`) VALUES
+INSERT INTO `orders` (`id`, `summa`, `order_date`, `customer_id`, `vendor_id`) VALUES
 (3001, 18.69, '2016-12-10', 2005, 1001),
 (3002, 767.19, '2016-12-10', 2001, 1001),
 (3003, 1900.1, '2016-12-10', 2002, 1003),
@@ -91,55 +91,55 @@ INSERT INTO `order` (`id`, `summa`, `order_date`, `customer_id`, `vendor_id`) VA
 ----- SQLite  ---------------------
 PRAGMA foreign_keys = ON;
 
-DROP TABLE `order`;
-DROP TABLE `customer`;
+DROP TABLE `orders`;
+DROP TABLE `customers`;
 
 
-CREATE TABLE `order` (
+CREATE TABLE `orders` (
   `id` INTEGER PRIMARY KEY,
   `summa` NUMERIC NOT NULL,
   `order_date` DATE NOT NULL,
   `customer_id` INTEGER NOT NULL,
   `vendor_id` INTEGER NOT NULL,
-  FOREIGN KEY (`vendor_id`) REFERENCES `vendor` (`id`) ON DELETE RESTRICT
+  FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`) ON DELETE RESTRICT
 );
 
 
-CREATE TABLE `customer` (
+CREATE TABLE `customers` (
   `id` INTEGER PRIMARY KEY,
   `name` VARCHAR(30) NOT NULL,
   `city` VARCHAR(30) NOT NULL,
   `rating` INTEGER NOT NULL CHECK (`rating`>0),
   `vendor_id` INTEGER NULL,
-  FOREIGN KEY (`vendor_id`) REFERENCES `vendor` (`id`) 
+  FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`) 
   ON DELETE SET NULL
 );
 
-CREATE TABLE `customer` (
+CREATE TABLE `customers` (
   `id` INTEGER PRIMARY KEY,
   `name` VARCHAR(30) NOT NULL,
   `city` VARCHAR(30) NOT NULL,
   `rating` INTEGER NOT NULL CHECK (`rating`>0),
   `vendor_id` INTEGER NULL,
-  FOREIGN KEY (`vendor_id`) REFERENCES `vendor` (`id`) 
+  FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`) 
   ON DELETE CASCADE
   ON UPDATE CASCADE
 );
 
-CREATE TABLE `customer` (
+CREATE TABLE `customers` (
   `id` INTEGER PRIMARY KEY,
   `name` VARCHAR(30) NOT NULL,
   `city` VARCHAR(30) NOT NULL,
   `rating` INTEGER NOT NULL CHECK (`rating`>0),
   `vendor_id` INT(6) NULL,
-  FOREIGN KEY (`vendor_id`) REFERENCES `vendor` (`id`) 
+  FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`) 
   ON DELETE SET NULL
   ON UPDATE SET NULL
 );
 
 ----- MySQL  ---------------------
-ALTER TABLE `order` ADD CONSTRAINT `order_vendor_fk` FOREIGN KEY (`vendor_id`) REFERENCES `vendor` (`id`) ON DELETE RESTRICT;
-ALTER TABLE `customer` ADD CONSTRAINT `customer_vendor_fk` FOREIGN KEY (`vendor_id`) REFERENCES `vendor` (`id`) ON DELETE SET NULL;
+ALTER TABLE `orders` ADD CONSTRAINT `order_vendors_fk` FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`) ON DELETE RESTRICT;
+ALTER TABLE `customers` ADD CONSTRAINT `customers_vendors_fk` FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`) ON DELETE SET NULL;
 
 SELECT 
   TABLE_NAME,COLUMN_NAME,CONSTRAINT_NAME, REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME
@@ -147,92 +147,92 @@ FROM
   INFORMATION_SCHEMA.KEY_COLUMN_USAGE
 WHERE
   REFERENCED_TABLE_SCHEMA = 'example' AND
-  REFERENCED_TABLE_NAME = 'vendor';
+  REFERENCED_TABLE_NAME = 'vendors';
 
 
 
 -- 5. Select from alone table
-SELECT id, name, city FROM vendor;
-SELECT * FROM vendor;
+SELECT id, name, city FROM vendors;
+SELECT * FROM vendors;
 
-SELECT id, name, city FROM vendor WHERE city="Саранск";
-SELECT * FROM customer WHERE rating>=200 AND city="Москва";
-SELECT * FROM vendor WHERE city IN ("Москва", "Саранск");
+SELECT id, name, city FROM vendors WHERE city="Саранск";
+SELECT * FROM customers WHERE rating>=200 AND city="Москва";
+SELECT * FROM vendors WHERE city IN ("Москва", "Саранск");
 
-SELECT * FROM customer WHERE name LIKE "По%";
-SELECT * FROM customer WHERE name RLIKE "ов$"; // MySQL
-SELECT * FROM customer WHERE LEFT(name, 2) = "Ив";  // MySQL
-SELECT * FROM customer WHERE substr(name, 1, 2) = "Ив";  // SQLite
+SELECT * FROM customers WHERE name LIKE "По%";
+SELECT * FROM customers WHERE name RLIKE "ов$"; // MySQL
+SELECT * FROM customers WHERE LEFT(name, 2) = "Ив";  // MySQL
+SELECT * FROM customers WHERE substr(name, 1, 2) = "Ив";  // SQLite
 
-SELECT CONCAT(LEFT(name,2),".-", city) AS "Фамилия-Город" FROM vendor; // MySQL
-SELECT substr(name,1,2) || ".-" || city AS "Фамилия-Город" FROM vendor; // SQLite
+SELECT CONCAT(LEFT(name,2),".-", city) AS "Фамилия-Город" FROM vendors; // MySQL
+SELECT substr(name,1,2) || ".-" || city AS "Фамилия-Город" FROM vendors; // SQLite
 
-SELECT * FROM vendor ORDER BY name;
+SELECT * FROM vendors ORDER BY name;
 
 -- 6. Aggregation
-SELECT SUM(summa) FROM `order`;
-SELECT COUNT(*) FROM customer;
+SELECT SUM(summa) FROM `orders`;
+SELECT COUNT(*) FROM customers;
 
 -- 7. Groupping
-SELECT vendor_id, MAX(summa) FROM `order` GROUP BY vendor_id;
-SELECT vendor_id, order_date, MAX(summa) FROM `order` GROUP BY vendor_id, order_date;
-SELECT vendor_id, order_date, MAX(summa) FROM `order` GROUP BY vendor_id, order_date HAVING MAX(summa)>100;
+SELECT vendor_id, MAX(summa) FROM `orders` GROUP BY vendor_id;
+SELECT vendor_id, order_date, MAX(summa) FROM `orders` GROUP BY vendor_id, order_date;
+SELECT vendor_id, order_date, MAX(summa) FROM `orders` GROUP BY vendor_id, order_date HAVING MAX(summa)>100;
 
 -- 8. Inner join
-SELECT customer.name, vendor.name, vendor.city FROM vendor, customer WHERE vendor.city=customer.city;
-SELECT customer.name, vendor.name, vendor.city FROM vendor INNER JOIN customer ON vendor.city=customer.city;
+SELECT customers.name, vendors.name, vendors.city FROM vendors, customers WHERE vendors.city=customers.city;
+SELECT customers.name, vendors.name, vendors.city FROM vendors INNER JOIN customers ON vendors.city=customers.city;
 
 --9. Self-join
-SELECT a.name AS Customer1, b.name AS Customer2, a.rating FROM customer a, customer b WHERE a.rating=b.rating;
+SELECT a.name AS customers1, b.name AS customers2, a.rating FROM customers a, customers b WHERE a.rating=b.rating;
 
 -- 10. Outer join
-SELECT vendor.name, customer.name FROM vendor LEFT OUTER JOIN customer ON vendor.id = customer.vendor_id;
-SELECT vendor.name, customer.name FROM customer RIGHT OUTER JOIN vendor ON vendor.id = customer.vendor_id;
+SELECT vendors.name, customers.name FROM vendors LEFT OUTER JOIN customers ON vendors.id = customers.vendor_id;
+SELECT vendors.name, customers.name FROM customers RIGHT OUTER JOIN vendors ON vendors.id = customers.vendor_id;
 
 -- 11. Nested queries
-SELECT * FROM `order` WHERE vendor_id = (SELECT id FROM vendor WHERE name="Иванов");
-SELECT * FROM `order` WHERE vendor_id IN (SELECT id FROM vendor WHERE name="Иванов");
+SELECT * FROM `orders` WHERE vendor_id = (SELECT id FROM vendors WHERE name="Иванов");
+SELECT * FROM `orders` WHERE vendor_id IN (SELECT id FROM vendors WHERE name="Иванов");
 
-SELECT rating, COUNT(DISTINCT id) FROM customer GROUP BY rating HAVING rating > (SELECT AVG(rating) FROM customer WHERE city="Саранск");
+SELECT rating, COUNT(DISTINCT id) FROM customers GROUP BY rating HAVING rating > (SELECT AVG(rating) FROM customers WHERE city="Саранск");
 
 -- 12. Related queries
-SELECT * FROM customer a WHERE "2016-12-10" IN (SELECT order_date FROM `order` b WHERE a.id = b.customer_id);
-SELECT id, name FROM vendor main WHERE 1 < (SELECT COUNT(*) FROM customer WHERE vendor_id=main.id);
-SELECT * FROM `order` a WHERE summa > (SELECT AVG(summa) FROM `order` b WHERE a.customer_id = b.customer_id);
+SELECT * FROM customers a WHERE "2016-12-10" IN (SELECT order_date FROM `orders` b WHERE a.id = b.customer_id);
+SELECT id, name FROM vendors main WHERE 1 < (SELECT COUNT(*) FROM customers WHERE vendor_id=main.id);
+SELECT * FROM `orders` a WHERE summa > (SELECT AVG(summa) FROM `orders` b WHERE a.customer_id = b.customer_id);
 
 -- 13. exists, any, all
-SELECT DISTINCT vendor_id FROM customer a WHERE EXISTS (SELECT * FROM customer b WHERE b.vendor_id = a.vendor_id AND b.id <> a.id);
-SELECT * FROM `order` WHERE summa > ALL (SELECT summa FROM `order` WHERE order_date="2016-12-10");
-SELECT * FROM `order` WHERE summa > ANY (SELECT summa FROM `order` WHERE order_date="2016-12-10");
+SELECT DISTINCT vendor_id FROM customers a WHERE EXISTS (SELECT * FROM customers b WHERE b.vendor_id = a.vendor_id AND b.id <> a.id);
+SELECT * FROM `orders` WHERE summa > ALL (SELECT summa FROM `orders` WHERE order_date="2016-12-10");
+SELECT * FROM `orders` WHERE summa > ANY (SELECT summa FROM `orders` WHERE order_date="2016-12-10");
 
 -- 13. CASE
-SELECT id, name AS 'Фамилия', CASE city WHEN 'Саранск' THEN 'Да' ELSE 'Нет' END 'Земляк' FROM customer;
-SELECT id, name AS 'Фамилия', CASE WHEN rating >= 300 THEN 'Молодец' WHEN rating >=200 THEN 'Неплохо' ELSE 'Старайся больше' END 'Оценка по рейтингу' FROM customer;
+SELECT id, name AS 'Фамилия', CASE city WHEN 'Саранск' THEN 'Да' ELSE 'Нет' END 'Земляк' FROM customers;
+SELECT id, name AS 'Фамилия', CASE WHEN rating >= 300 THEN 'Молодец' WHEN rating >=200 THEN 'Неплохо' ELSE 'Старайся больше' END 'Оценка по рейтингу' FROM customers;
 
 -- 14. Window functions
-SELECT *, ROW_NUMBER() OVER () AS number FROM customer;
-SELECT *, ROW_NUMBER() OVER (ORDER BY rating DESC) AS rating_place FROM customer ORDER BY name;
-SELECT *, RANK() OVER (ORDER BY rating DESC) AS rank FROM customer ORDER BY name;
-SELECT name, city, rating, AVG(rating) OVER () AS average_rating FROM customer;
-SELECT name, city, rating, rating-AVG(rating) OVER () AS delta_rating FROM customer;
+SELECT *, ROW_NUMBER() OVER () AS number FROM customers;
+SELECT *, ROW_NUMBER() OVER (ORDER BY rating DESC) AS rating_place FROM customers ORDER BY name;
+SELECT *, RANK() OVER (ORDER BY rating DESC) AS rank FROM customers ORDER BY name;
+SELECT name, city, rating, AVG(rating) OVER () AS average_rating FROM customers;
+SELECT name, city, rating, rating-AVG(rating) OVER () AS delta_rating FROM customers;
 
-SELECT *, MAX(rating) FROM customer;
-SELECT *, MAX(rating) OVER () FROM customer;
+SELECT *, MAX(rating) FROM customers;
+SELECT *, MAX(rating) OVER () FROM customers;
 
-SELECT *, COUNT(*) OVER (PARTITION BY city) AS customers_in_city FROM customer;
+SELECT *, COUNT(*) OVER (PARTITION BY city) AS customerss_in_city FROM customers;
 
 -- 15. Union
-SELECT name, city, 'Продавец' AS 'Роль' FROM vendor
+SELECT name, city, 'Продавец' AS 'Роль' FROM vendors
 UNION
-SELECT name, city, 'Покупатель' FROM customer
+SELECT name, city, 'Покупатель' FROM customers
 ORDER BY city, name;
 
 -- 16. Views
 
 CREATE VIEW orders_with_names
-AS SELECT `order`.order_date, customer.name AS customer_name, vendor.name AS vendor_name, `order`.summa
-FROM `order`, customer, vendor
-WHERE `order`.customer_id = customer.id AND `order`.vendor_id = vendor.id;
+AS SELECT `orders`.order_date, customers.name AS customers_name, vendors.name AS vendors_name, `orders`.summa
+FROM `orders`, customers, vendors
+WHERE `orders`.customer_id = customers.id AND `orders`.vendor_id = vendors.id;
 
 SELECT * FROM orders_with_names;
 
@@ -240,9 +240,9 @@ SELECT * FROM orders_with_names;
 -- 17. Common Table Exprssions
 
 WITH
-  orders_with_names AS (SELECT `order`.order_date, customer.name AS customer_name, vendor.name AS vendor_name, `order`.summa
-  FROM `order`, customer, vendor
-  WHERE `order`.customer_id = customer.id AND `order`.vendor_id = vendor.id)
+  orders_with_names AS (SELECT `orders`.order_date, customers.name AS customers_name, vendors.name AS vendors_name, `orders`.summa
+  FROM `orders`, customers, vendors
+  WHERE `orders`.customer_id = customers.id AND `orders`.vendor_id = vendors.id)
 SELECT * FROM orders_with_names ORDER BY summa;
 
 
@@ -251,9 +251,9 @@ SELECT * FROM orders_with_names ORDER BY summa;
 DELIMITER //
 CREATE PROCEDURE ChangeName()
 BEGIN
-    SELECT * FROM customer;
-    UPDATE customer SET name = "Шаров" WHERE id = 2001;
-    SELECT * FROM customer;
+    SELECT * FROM customers;
+    UPDATE customers SET name = "Шаров" WHERE id = 2001;
+    SELECT * FROM customers;
 END; //
 DELIMITER ;
 
@@ -262,9 +262,9 @@ CALL ChangeName();
 DELIMITER //
 CREATE PROCEDURE ChangeNameWithParameter(value varchar(30))
 BEGIN
-    SELECT * FROM customer;
-    UPDATE customer SET name = value WHERE id = 2001;
-    SELECT * FROM customer;
+    SELECT * FROM customers;
+    UPDATE customers SET name = value WHERE id = 2001;
+    SELECT * FROM customers;
 END; //
 DELIMITER ;
 
@@ -287,15 +287,15 @@ SELECT Hello('Андрей');
 -----------------------------------------
 
 DELIMITER //
-CREATE FUNCTION GetVendorForCustomer(customer_name varchar(30)) RETURNS varchar(30)
+CREATE FUNCTION GetvendorsForcustomers(customers_name varchar(30)) RETURNS varchar(30)
 BEGIN
-  DECLARE vendor_name varchar(30);
-  SELECT name INTO vendor_name FROM vendor WHERE id IN (SELECT vendor_id FROM customer WHERE name = customer_name ) LIMIT 1;
-  RETURN vendor_name;
+  DECLARE vendors_name varchar(30);
+  SELECT name INTO vendors_name FROM vendors WHERE id IN (SELECT vendor_id FROM customers WHERE name = customers_name ) LIMIT 1;
+  RETURN vendors_name;
 END //
 DELIMITER ';'
 
-SELECT GetVendorForCustomer('Ли');
+SELECT GetvendorsForcustomers('Ли');
 
 -----------  Cursors  -------------------------------------
 
@@ -350,7 +350,7 @@ SELECT * FROM c3;
 SET @total = 0;
 
 DELIMITER //
-CREATE TRIGGER order_after_insert AFTER INSERT ON `order`
+CREATE TRIGGER order_after_insert AFTER INSERT ON `orders`
 FOR EACH ROW
 BEGIN
   SET @total = @total + NEW.summa;
@@ -360,5 +360,5 @@ DELIMITER ';'
 
 
 SELECT @total;
-INSERT INTO `order` (`summa`, `order_date`, `customer_id`, `vendor_id`) VALUES (130.45, '2020-05-10', 2005, 1001);
+INSERT INTO `orders` (`summa`, `order_date`, `customer_id`, `vendor_id`) VALUES (130.45, '2020-05-10', 2005, 1001);
 SELECT @total;

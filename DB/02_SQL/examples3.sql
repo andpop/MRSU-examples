@@ -6,25 +6,25 @@ SELECT id, name 'Покупатель',
       WHEN rating>=200 THEN 'Неплохо'
       ELSE 'Старайся'
    END 'Рейтинг'
-FROM customer;
+FROM customers;
 
 SELECT v.name 'Продавец',
    CASE
       WHEN v.city='Саранск' THEN
-         (SELECT count(*) from `order` o
+         (SELECT count(*) from `orders` o
           WHERE v.id=o.vendor_id)
       ELSE
          'Не из Саранска'
    END 'Земляк'
-FROM vendor v;
+FROM vendors v;
 
 -- Защита от деления на ноль
 SELECT v.name 'Продавец', sum(o.summa) 'Сумма', count(o.summa) 'Количество',
    CASE WHEN count(o.summa) = 0 THEN 0
        ELSE sum(o.summa) / count(o.summa)
    END 'Средний чек'
-FROM vendor v
-   LEFT OUTER JOIN `order` o
+FROM vendors v
+   LEFT OUTER JOIN `orders` o
    ON v.id=o.vendor_id
 GROUP BY v.name;
 
@@ -33,58 +33,58 @@ GROUP BY v.name;
 /*    CASE WHEN count(o.summa) = 0 THEN 1 */
 /*        ELSE count(o.summa) */
 /*    END 'Средний чек' */
-/* FROM vendor v */
-/*    LEFT OUTER JOIN `order` o */
+/* FROM vendors v */
+/*    LEFT OUTER JOIN `orders` o */
 /*    ON v.id=o.vendor_id */
 /* GROUP BY v.name; */
 
 =========== Аналитические функции ==============
 
-SELECT *, ROW_NUMBER() OVER () AS number FROM customer;
+SELECT *, ROW_NUMBER() OVER () AS number FROM customers;
 
 -- Функции ранжирования
 
 SELECT *, ROW_NUMBER() OVER w AS rating_place
-FROM customer
+FROM customers
 WINDOW w AS (ORDER BY rating DESC)
 ORDER BY name;
 
 SELECT *, ROW_NUMBER() OVER (ORDER BY rating DESC) AS rating_place 
-FROM customer 
+FROM customers 
 ORDER BY name;
 
-SELECT *, RANK() OVER (ORDER BY rating DESC) AS rank FROM customer ORDER BY name;
+SELECT *, RANK() OVER (ORDER BY rating DESC) AS rank FROM customers ORDER BY name;
 
-SELECT *, DENSE_RANK() OVER (ORDER BY rating DESC) AS rank FROM customer ORDER BY name;
+SELECT *, DENSE_RANK() OVER (ORDER BY rating DESC) AS rank FROM customers ORDER BY name;
 
 SELECT id, name, rating, ROW_NUMBER() OVER (ORDER BY rating DESC) AS row_number,
-RANK() OVER (ORDER BY rating DESC) AS rank, DENSE_RANK() OVER (ORDER BY rating DESC) AS dense_rank FROM customer ORDER BY name;
+RANK() OVER (ORDER BY rating DESC) AS rank, DENSE_RANK() OVER (ORDER BY rating DESC) AS dense_rank FROM customers ORDER BY name;
 
 -- Ранжирование по суммам заказов по годам
-SELECT *, RANK() OVER (PARTITION BY strftime('%Y', order_date) ORDER BY summa DESC) AS rank FROM `order` ORDER BY order_date;
+SELECT *, RANK() OVER (PARTITION BY strftime('%Y', order_date) ORDER BY summa DESC) AS rank FROM `orders` ORDER BY order_date;
 
 -- Функции агрегирования
-SELECT name, city, rating, AVG(rating) OVER () AS average_rating FROM customer;
-SELECT name, city, rating, rating-AVG(rating) OVER () AS delta_rating FROM customer;
+SELECT name, city, rating, AVG(rating) OVER () AS average_rating FROM customers;
+SELECT name, city, rating, rating-AVG(rating) OVER () AS delta_rating FROM customers;
 
 -- Возвращается одна строка
-SELECT *, MAX(rating) FROM customer;
+SELECT *, MAX(rating) FROM customers;
 -- Возвращаются все строки
-SELECT *, MAX(rating) OVER () FROM customer;
+SELECT *, MAX(rating) OVER () FROM customers;
 
-SELECT *, COUNT(*) OVER (PARTITION BY city) AS customers_in_city FROM customer;
+SELECT *, COUNT(*) OVER (PARTITION BY city) AS customerss_in_city FROM customers;
 
 -- Рамки окон
 -- Окно данных от начала результирующего набора до текущей строки, включая ее
-SELECT *, sum(summa) OVER (ROWS UNBOUNDED PRECEDING) 'Нарастающий итог' FROM `order`;
+SELECT *, sum(summa) OVER (ROWS UNBOUNDED PRECEDING) 'Нарастающий итог' FROM `orders`;
 
 
 SELECT id, summa, lag(summa, 2) OVER () 'Предыдущая сумма',
-lead(summa, 1) OVER () 'Следующая сумма' FROM `order`;
+lead(summa, 1) OVER () 'Следующая сумма' FROM `orders`;
 
 --------------------------------------------------------------------
--- Дублирование данных из таблицы `order` под новой датой
-insert into `order` (summa, order_date, customer_id, vendor_id) select summa, '2021-09-28', customer_id, vendor_id from `order` where order_date='2016-12-10';
+-- Дублирование данных из таблицы `orders` под новой датой
+insert into `orders` (summa, order_date, customer_id, vendor_id) select summa, '2021-09-28', customer_id, vendor_id from `orders` where order_date='2016-12-10';
 
 ===== Объединение результатов запросов ===========================
 --------------------------------------------------------------------
@@ -103,9 +103,9 @@ SELECT 3,4;
 
 ======= Представления =========================
 CREATE VIEW orders_with_names
-AS SELECT `order`.order_date, customer.name AS customer_name, vendor.name AS vendor_name, `order`.summa
-FROM `order`, customer, vendor
-WHERE `order`.customer_id = customer.id AND `order`.vendor_id = vendor.id;
+AS SELECT `orders`.order_date, customers.name AS customers_name, vendors.name AS vendors_name, `orders`.summa
+FROM `orders`, customers, vendors
+WHERE `orders`.customer_id = customers.id AND `orders`.vendor_id = vendors.id;
 
 SELECT * FROM orders_with_names;
 
@@ -127,14 +127,14 @@ WITH twoColumns(a,b) AS (SELECT 1, 2)
 SELECT * FROM twoColumns;
 
 
-WITH customer_saransk AS
+WITH customers_saransk AS
    (SELECT id, name
-    FROM customer 
+    FROM customers 
     WHERE city="Саранск"),
 order_saransk AS
    (SELECT c.name, o.order_date, o.summa
-    FROM `order` o
-       INNER JOIN customer_saransk c
+    FROM `orders` o
+       INNER JOIN customers_saransk c
        ON o.customer_id=c.id)
 SELECT *
 FROM order_saransk
@@ -142,25 +142,25 @@ ORDER BY name;
 
 -- Вывести статистику по заказам покупателей (количество и сумма) с отнесением к одной из трех категорий по сумме покупок
 
-SELECT customer.name name, num_orders, total, sum_groups.name
-FROM customer
+SELECT customers.name name, num_orders, total, sum_groups.name
+FROM customers
    INNER JOIN 
         (SELECT customer_id, count(*) num_orders, sum(summa) total
-        FROM `order`
-        GROUP BY customer_id) customer_orders
-      ON customer.id=customer_orders.customer_id
+        FROM `orders`
+        GROUP BY customer_id) customers_orders
+      ON customers.id=customers_orders.customer_id
    INNER JOIN
         (SELECT 'Мало' name, 0 low_sum, 100 high_sum
         UNION
         SELECT 'Средне' name, 100.01 low_sum, 500 high_sum
         UNION
         SELECT 'Много' name, 500.01 low_sum, 100000 high_sum) sum_groups
-      ON customer_orders.total BETWEEN sum_groups.low_sum AND sum_groups.high_sum;
+      ON customers_orders.total BETWEEN sum_groups.low_sum AND sum_groups.high_sum;
 
 -- Перепишем через CTE
-WITH customer_orders AS (
+WITH customers_orders AS (
     SELECT customer_id, count(*) num_orders, sum(summa) total
-        FROM `order`
+        FROM `orders`
         GROUP BY customer_id),
     sum_groups AS (
     SELECT 'Мало' name, 0 low_sum, 100 high_sum
@@ -168,14 +168,14 @@ WITH customer_orders AS (
             SELECT 'Средне' name, 100.01 low_sum, 500 high_sum
             UNION
             SELECT 'Много' name, 500.01 low_sum, 100000 high_sum)
-SELECT customer.name name, num_orders, total, sum_groups.name
-FROM customer
+SELECT customers.name name, num_orders, total, sum_groups.name
+FROM customers
    INNER JOIN 
-        customer_orders
-      ON customer.id=customer_orders.customer_id
+        customers_orders
+      ON customers.id=customers_orders.customer_id
    INNER JOIN
         sum_groups
-      ON customer_orders.total BETWEEN sum_groups.low_sum AND sum_groups.high_sum;
+      ON customers_orders.total BETWEEN sum_groups.low_sum AND sum_groups.high_sum;
 
 
 
