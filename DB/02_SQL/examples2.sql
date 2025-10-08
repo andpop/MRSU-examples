@@ -32,6 +32,12 @@ PRAGMA foreign_keys = ON;
 DROP TABLE `orders`;
 DROP TABLE `customers`;
 
+CREATE TABLE `vendors` (
+  `id` INTEGER PRIMARY KEY,
+  `name` VARCHAR(30) NOT NULL,
+  `city` VARCHAR(30) NOT NULL,
+  `percent` INTEGER NOT NULL CHECK (`percent`>0)
+);
 
 CREATE TABLE `orders` (
   `id` INTEGER PRIMARY KEY,
@@ -42,6 +48,14 @@ CREATE TABLE `orders` (
   FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`) ON DELETE RESTRICT
 );
 
+
+CREATE TABLE `customers` (
+  `id` INTEGER PRIMARY KEY,
+  `name` VARCHAR(30) NOT NULL,
+  `city` VARCHAR(30) NOT NULL,
+  `rating` INTEGER NOT NULL CHECK (`rating`>0),
+  `vendor_id` INTEGER NULL REFERENCES `vendors` (`id`) 
+);
 
 CREATE TABLE `customers` (
   `id` INTEGER PRIMARY KEY,
